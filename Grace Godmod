@@ -1,0 +1,51 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+
+Workspace.DescendantAdded:Connect(function(item)
+    if item:IsA("ParticleEmitter") then
+        item:SetAttribute("OriginalRate", item.Rate)
+        item.Rate *= 10
+    end
+end)
+
+Workspace.DescendantAdded:Connect(function(object)
+    if object.Name == "base" and object:IsA("BasePart") then
+        local character = LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            object.CFrame = character.HumanoidRootPart.CFrame
+        end
+    end
+end)
+
+local unwantedObjects = {
+    "Rush",
+    "Worm",
+    "eye",
+    "Rain",
+    "elkman"
+}
+
+Workspace.DescendantAdded:Connect(function(newObject)
+    if table.find(unwantedObjects, newObject.Name) then
+        newObject:Destroy()
+    end
+end)
+
+task.spawn(function()
+    while task.wait(0.1) do
+        local gui = LocalPlayer:FindFirstChildOfClass("PlayerGui"):FindFirstChild("eyegui")
+        if gui then
+            gui:Destroy()
+        end
+    end
+end)
+
+wait(1)
+
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Success",
+    Text = "Script make by Cáo Mod",
+    Duration = 5
+})
