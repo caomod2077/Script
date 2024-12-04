@@ -46,6 +46,6 @@ wait(1)
 local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
     Title = "Success",
-    Text = "Script make by Cáo Mod",
+    Text = "it is not Godmod completely and has 3 entities that can kill you",
     Duration = 5
 })
