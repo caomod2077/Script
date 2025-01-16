@@ -1,0 +1,87 @@
+
+local gui = game.CoreGui:FindFirstChild("CustomNotification") or Instance.new("ScreenGui", game.CoreGui)
+if not gui.Parent then
+    gui.Name = "CustomNotification"
+    gui.Parent = game.CoreGui
+end
+
+local notificationCount = 0
+
+local function notification(params)
+    notificationCount = notificationCount + 1
+
+    local main = Instance.new("Frame", gui)
+    main.Size = UDim2.new(0, 250, 0, 140)
+    main.Position = UDim2.new(0.65, 200, 0.9, 10)
+    main.AnchorPoint = Vector2.new(0.5, 0.5)
+    main.BorderSizePixel = 0
+    main.Active = true
+
+    local corner = Instance.new("UICorner", main)
+    corner.CornerRadius = UDim.new(0, 15)
+
+    local uiGradient = Instance.new("UIGradient", main)
+    uiGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 127, 0)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 191, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 191, 0)),
+    })
+    uiGradient.Rotation = 45
+
+    local title = Instance.new("TextLabel", main)
+    title.Size = UDim2.new(1, -20, 0.3, 0)
+    title.Position = UDim2.new(0.05, 10, 0, 10)
+    title.BackgroundTransparency = 1
+    title.Text = params.Title
+    title.TextColor3 = Color3.fromRGB(0, 0, 0)
+    title.Font = Enum.Font.SourceSansBold
+    title.TextSize = 37
+    title.TextXAlignment = Enum.TextXAlignment.Left
+
+    local description = Instance.new("TextLabel", main)
+    description.Size = UDim2.new(0.84, -20, 0.5, 0)
+    description.Position = UDim2.new(0.2, 10, 0.4, 0)
+    description.BackgroundTransparency = 1
+    description.Text = params.Description
+    description.TextColor3 = Color3.fromRGB(0, 0, 0)
+    description.Font = Enum.Font.SourceSans
+    description.TextSize = 16
+    description.TextWrapped = true
+    description.TextXAlignment = Enum.TextXAlignment.Left
+
+    local Icon = Instance.new("ImageLabel", main)
+    Icon.Size = UDim2.new(0, 35, 0, 35)
+    Icon.Position = UDim2.new(0, 10, 0.7, 0)
+    Icon.Image = params.IconId
+    Icon.BackgroundTransparency = 1
+    
+    local ytText = Instance.new("TextLabel", main)
+    ytText.Size = UDim2.new(0.3, 0, 0.2, 0)
+    ytText.Position = UDim2.new(0.67, 0, 0.86, 0)
+    ytText.BackgroundTransparency = 1
+    ytText.Text = params.YTText
+    ytText.TextColor3 = Color3.fromRGB(0, 0, 0)
+    ytText.Font = Enum.Font.SourceSansBold
+    ytText.TextSize = 16
+    ytText.TextXAlignment = Enum.TextXAlignment.Right
+
+    local TweenService = game:GetService("TweenService")
+    local appear = TweenService:Create(main, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = main.Position - UDim2.new(0, 0, 0, 50)})
+    appear:Play()
+
+    task.wait(params.time)
+
+    local disappear = TweenService:Create(main, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.In), {Position = main.Position + UDim2.new(0, 0, 0, 50)})
+    disappear:Play()
+    task.wait(0.5)
+    main:Destroy()
+    notificationCount = notificationCount - 1
+end
+
+notification({
+    Title = getgenv().TitleText,
+    Description = getgenv().DescriptionText,
+    time = getgenv().DisplayTime,
+    IconId = getgenv().IconId,
+    YTText = getgenv().YTText
+})
