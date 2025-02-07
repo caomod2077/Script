@@ -1,14 +1,18 @@
 --Open source | learn for free
-local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Script make by Cáo Mod",
+    Text = "Subscribe and like pls :(",
+    Duration = 5
+})
 
+local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local playerGui = player:FindFirstChildOfClass("PlayerGui") or player:WaitForChild("PlayerGui")
-
 local SettingLagGUI = Instance.new("ScreenGui")
 SettingLagGUI.Name = "SettingLag"
 SettingLagGUI.ResetOnSpawn = false
 SettingLagGUI.Parent = playerGui
-
 local SettingFrame = Instance.new("Frame")
 SettingFrame.Parent = SettingLagGUI
 SettingFrame.Size = UDim2.new(0, 200, 0, 180)
@@ -16,7 +20,6 @@ SettingFrame.Position = UDim2.new(0.5, -100, 0.5, -90)
 SettingFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 SettingFrame.BorderSizePixel = 0
 SettingFrame.Active = false
-
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Parent = SettingFrame
 TitleLabel.Size = UDim2.new(1, 0, 0, 30)
@@ -26,7 +29,6 @@ TitleLabel.TextColor3 = Color3.new(1, 1, 1)
 TitleLabel.Font = Enum.Font.SourceSansBold
 TitleLabel.TextSize = 18
 TitleLabel.BackgroundTransparency = 1
-
 local WaitTimeBox = Instance.new("TextBox")
 WaitTimeBox.Parent = SettingFrame
 WaitTimeBox.Size = UDim2.new(0.8, 0, 0, 30)
@@ -38,7 +40,6 @@ WaitTimeBox.Font = Enum.Font.SourceSans
 WaitTimeBox.TextSize = 14
 WaitTimeBox.BorderSizePixel = 0
 WaitTimeBox.ClearTextOnFocus = true
-
 local DelayTimeBox = Instance.new("TextBox")
 DelayTimeBox.Parent = SettingFrame
 DelayTimeBox.Size = UDim2.new(0.8, 0, 0, 30)
@@ -50,12 +51,10 @@ DelayTimeBox.Font = Enum.Font.SourceSans
 DelayTimeBox.TextSize = 14
 DelayTimeBox.BorderSizePixel = 0
 DelayTimeBox.ClearTextOnFocus = true
-
 local ToggleGUI = Instance.new("ScreenGui")
 ToggleGUI.Name = "ToggleGUI"
 ToggleGUI.ResetOnSpawn = false
 ToggleGUI.Parent = playerGui
-
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Parent = ToggleGUI
 ToggleButton.Size = UDim2.new(0, 80, 0, 35)
@@ -67,16 +66,13 @@ ToggleButton.Font = Enum.Font.SourceSans
 ToggleButton.TextSize = 16
 ToggleButton.BorderSizePixel = 0
 ToggleButton.AutoButtonColor = false
-
 ToggleButton.MouseButton1Click:Connect(function()
     SettingLagGUI.Enabled = not SettingLagGUI.Enabled
 end)
-
 local ActionGUI = Instance.new("ScreenGui")
 ActionGUI.Name = "ActionGUI"
 ActionGUI.ResetOnSpawn = false
 ActionGUI.Parent = playerGui
-
 local FallingButton = Instance.new("TextButton")
 FallingButton.Parent = ActionGUI
 FallingButton.Size = UDim2.new(0, 100, 0, 40)
@@ -89,7 +85,6 @@ FallingButton.TextSize = 16
 FallingButton.BorderSizePixel = 0
 FallingButton.Active = true
 FallingButton.Draggable = true
-
 local FakeLagButton = Instance.new("TextButton")
 FakeLagButton.Parent = ActionGUI
 FakeLagButton.Size = UDim2.new(0, 100, 0, 40)
