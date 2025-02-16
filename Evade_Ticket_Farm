@@ -1,0 +1,71 @@
+-- Open source 
+local Players = game:GetService("Players")
+local VirtualUser = game:GetService("VirtualUser")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local tickets = Workspace:FindFirstChild("Game") 
+    and Workspace.Game:FindFirstChild("Effects") 
+    and Workspace.Game.Effects:FindFirstChild("Tickets")
+
+player.Idled:Connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+local offsetX = math.random(0, 1) == 0 and 2500 or 0
+local offsetZ = offsetX == 0 and 2500 or 0
+local farmPosition = humanoidRootPart.Position + Vector3.new(offsetX, 0, offsetZ)
+
+local farmPart = Instance.new("Part")
+farmPart.Name = "FarmPlatform"
+farmPart.Size = Vector3.new(5, 1, 5)
+farmPart.Anchored = true
+farmPart.Transparency = 0.5
+farmPart.Color = Color3.fromRGB(0, 255, 0)
+farmPart.Position = farmPosition + Vector3.new(0, 10, 0)
+farmPart.Parent = Workspace
+
+local function teleportToFarmPart()
+    if character and humanoidRootPart then
+        humanoidRootPart.CFrame = CFrame.new(farmPart.Position + Vector3.new(0, 3, 0))
+    end
+end
+
+teleportToFarmPart()
+
+while true do
+    character = player.Character or player.CharacterAdded:Wait()
+    humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+    if humanoidRootPart then
+        if character:GetAttribute("Downed") then
+            ReplicatedStorage.Events.Player.ChangePlayerMode:FireServer(true)
+            task.wait(3)
+            teleportToFarmPart()
+            task.wait(1)
+        end
+
+        if tickets then
+            for _, ticket in ipairs(tickets:GetChildren()) do
+                local ticketPart = ticket:FindFirstChild("HumanoidRootPart")
+                if ticketPart then
+                    humanoidRootPart.CFrame = ticketPart.CFrame
+                    task.wait(1)
+                    teleportToFarmPart()
+                end
+            end
+        end
+    end
+    task.wait(1)
+end
+
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Script Make by Cáo Mod",
+    Text = "have fun",
+    Duration = 7
+})
