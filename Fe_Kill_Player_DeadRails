@@ -1,0 +1,169 @@
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Script make by Cáo Mod",
+    Text = "Subscribe and like pls :(",
+    Duration = 7
+})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local SG = Instance.new("ScreenGui")
+local F = Instance.new("Frame")
+local TL = Instance.new("TextLabel")
+local PD = Instance.new("TextButton")
+local PLF = Instance.new("ScrollingFrame")
+local UIL = Instance.new("UIListLayout")
+local AB = Instance.new("TextButton")
+
+SG.Parent = LocalPlayer:WaitForChild("PlayerGui")
+SG.ResetOnSpawn = false
+
+F.Parent = SG
+F.Size = UDim2.new(0.25, 0, 0.35, 0)
+F.Position = UDim2.new(0.5, -F.Size.X.Offset / 2, 0.5, -F.Size.Y.Offset / 2)
+F.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+F.Active = true
+F.Draggable = true
+
+TL.Parent = F
+TL.Size = UDim2.new(1, 0, 0.15, 0)
+TL.Position = UDim2.new(0, 0, 0, 0)
+TL.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TL.Text = "FE Kill Player Dead Rails"
+TL.TextColor3 = Color3.fromRGB(255, 255, 255)
+TL.Font = Enum.Font.Cartoon
+TL.TextSize = 14
+TL.TextWrapped = true
+
+PD.Parent = F
+PD.Size = UDim2.new(0.8, 0, 0.15, 0)
+PD.Position = UDim2.new(0.1, 0, 0.2, 0)
+PD.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+PD.Text = "Choose player"
+PD.TextColor3 = Color3.fromRGB(255, 255, 255)
+PD.Font = Enum.Font.Cartoon
+PD.TextSize = 14
+
+PLF.Parent = F
+PLF.Size = UDim2.new(0.8, 0, 0.35, 0)
+PLF.Position = UDim2.new(0.1, 0, 0.35, 0)
+PLF.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+PLF.Visible = false
+PLF.ScrollBarThickness = 5
+PLF.CanvasSize = UDim2.new(0, 0, 0, 0)
+PLF.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+UIL.Parent = PLF
+UIL.SortOrder = Enum.SortOrder.LayoutOrder
+
+AB.Parent = F
+AB.Size = UDim2.new(0.6, 0, 0.15, 0)
+AB.Position = UDim2.new(0.2, 0, 0.85, 0)
+AB.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+AB.Text = "Kill"
+AB.TextColor3 = Color3.fromRGB(255, 255, 255)
+AB.Font = Enum.Font.Cartoon
+AB.TextSize = 16
+
+local function Notify(msg)
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "[System]",
+        Text = msg,
+        Duration = 3
+    })
+end
+
+local function updatePlayerList()
+    for _, v in pairs(PLF:GetChildren()) do
+        if v:IsA("TextButton") then
+            v:Destroy()
+        end
+    end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            local PB = Instance.new("TextButton")
+            PB.Parent = PLF
+            PB.Size = UDim2.new(1, 0, 0, 30)
+            PB.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            PB.Text = player.Name
+            PB.TextColor3 = Color3.fromRGB(255, 255, 255)
+            PB.Font = Enum.Font.Cartoon
+            PB.TextSize = 14
+            PB.AutoButtonColor = true
+
+            PB.MouseButton1Click:Connect(function()
+                PD.Text = player.Name
+                PLF.Visible = false
+            end)
+        end
+    end
+end
+
+PD.MouseButton1Click:Connect(function()
+    if PLF.Visible then
+        PLF.Visible = false
+    else
+        updatePlayerList()
+        PLF.Visible = true
+    end
+end)
+
+local function GetDistance(targetCharacter)
+    local root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    local targetRoot = targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart")
+    if root and targetRoot then
+        return (root.Position - targetRoot.Position).Magnitude
+    end
+    return math.huge
+end
+
+AB.MouseButton1Click:Connect(function()
+    local playerName = PD.Text
+    if playerName == "Choose player" then
+        Notify("No target selected.")
+        return
+    end
+
+    local targetPlayer = Players:FindFirstChild(playerName)
+    if targetPlayer and targetPlayer.Character then
+        local distance = GetDistance(targetPlayer.Character)
+
+        if distance > 15 then
+            Notify("Move closer to the target to kill!")
+            return
+        end
+
+        local DragRemote = ReplicatedStorage:FindFirstChild("Shared")
+        if DragRemote and DragRemote:FindFirstChild("Remotes") and DragRemote.Remotes:FindFirstChild("Drag") then
+            local RequestStartDrag = DragRemote.Remotes.Drag:FindFirstChild("RequestStartDrag")
+            if RequestStartDrag then
+                RequestStartDrag:FireServer(targetPlayer.Character)
+            end
+        end
+
+        task.wait(1)
+        targetPlayer.Character:BreakJoints()
+        Notify("Player " .. playerName .. " has been killed.")
+    else
+        Notify("Target character not found: " .. playerName)
+    end
+end)
+
+local function updateRainbow()
+    local hue = 0
+    local speed = 0.01
+    while true do
+        local color = Color3.fromHSV(hue, 1, 1)
+        TL.TextColor3 = color
+        PD.TextColor3 = color
+        AB.TextColor3 = color
+        F.BackgroundColor3 = color
+        hue = (hue + speed) % 1
+        wait(0.05)
+    end
+end
+
+coroutine.wrap(updateRainbow)()
