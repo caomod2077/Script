@@ -1,3 +1,4 @@
+--open source and remember to credit the creator:(
 local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
     Title = "Script make by Cáo Mod",
