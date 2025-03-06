@@ -5,6 +5,13 @@ StarterGui:SetCore("SendNotification", {
     Duration = 7
 })
 
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "problem with error",
+    Text = "20% will fail and can no longer kill that person",
+    Duration = 7
+})
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
