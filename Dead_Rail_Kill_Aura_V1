@@ -1,0 +1,81 @@
+--open source so remember to credit me :(
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Script make by Cáo Mod",
+    Text = "Subscribe and like pls :(",
+    Duration = 7
+})
+local StarterGui = game:GetService("StarterGui")
+    StarterGui:SetCore("SendNotification", {
+        Title = "Dead Rail | Kill Aura V1",
+        Text = "not support kill run fast npc(Walker, cowboy,Diddy wolf,...)",
+        Duration = 10
+    })
+local StarterGui = game:GetService("StarterGui")
+    StarterGui:SetCore("SendNotification", {
+        Title = "Bugs problem",
+        Text = "Sometimes the script will fake kill and the npc can still hit you",
+        Duration = 10
+    })
+local plr = game:GetService("Players").LocalPlayer
+local rs = game:GetService("ReplicatedStorage")
+
+local sg, fr, title, btn = Instance.new("ScreenGui"), Instance.new("Frame"), Instance.new("TextLabel"), Instance.new("TextButton")
+
+sg.Parent, sg.ResetOnSpawn = plr:FindFirstChild("PlayerGui"), false
+fr.Parent, fr.Size, fr.Position = sg, UDim2.new(0, 140, 0, 80), UDim2.new(0.1, 0, 0.05, 0)
+fr.BackgroundColor3, fr.Active, fr.Draggable = Color3.fromRGB(50, 50, 50), true, true
+
+title.Parent, title.Size, title.Position = fr, UDim2.new(1, 0, 0.4, 0), UDim2.new(0, 0, 0, 0)
+title.BackgroundTransparency, title.TextColor3 = 1, Color3.fromRGB(255, 255, 255)
+title.Font, title.TextSize, title.Text = Enum.Font.Cartoon, 16, "Credit: Cáo Mod"
+
+btn.Parent, btn.Size, btn.Position = fr, UDim2.new(1, 0, 0.6, 0), UDim2.new(0, 0, 0.4, 0)
+btn.BackgroundColor3, btn.TextColor3 = Color3.fromRGB(80, 80, 80), Color3.fromRGB(255, 255, 255)
+btn.Font, btn.TextSize, btn.Text = Enum.Font.Cartoon, 16, "Kill Aura: OFF"
+
+local auraOn, killDist = false, 15
+
+local function getNearestNPC()
+    local root = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    local nearest, minDist = nil, math.huge
+    for _, npc in ipairs(workspace:GetDescendants()) do
+        if npc:IsA("Model") and npc:FindFirstChild("HumanoidRootPart") and npc:FindFirstChild("Humanoid") and not game.Players:GetPlayerFromCharacter(npc) then
+            local hrp, hum = npc.HumanoidRootPart, npc.Humanoid
+            local dist = (hrp.Position - root.Position).Magnitude
+            if hum.Health > 0 and dist < minDist and dist <= killDist then
+                nearest, minDist = npc, dist
+            end
+        end
+    end
+    return nearest
+end
+
+local function dragAndKill(npc)
+    if not npc then return end
+    local hum = npc:FindFirstChild("Humanoid")
+    if hum and hum.Health <= 0 then return end
+
+    local dragRemote = rs:FindFirstChild("Shared") and rs.Shared:FindFirstChild("Remotes") and rs.Shared.Remotes:FindFirstChild("RequestStartDrag")
+    if dragRemote then
+        dragRemote:FireServer(npc)
+        task.wait(0.5)
+        if hum and hum.Health > 0 then npc:BreakJoints() end
+    end
+end
+
+local function killAuraLoop()
+    while auraOn do
+        local target = getNearestNPC()
+        if target then dragAndKill(target) end
+        task.wait(0.2)
+    end
+end
+
+btn.MouseButton1Click:Connect(function()
+    auraOn = not auraOn
+    btn.Text = auraOn and "Kill Aura: ON" or "Kill Aura: OFF"
+    if auraOn then killAuraLoop() end
+end)
