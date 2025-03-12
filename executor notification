@@ -1,0 +1,35 @@
+
+local player = game:GetService("Players").LocalPlayer
+local userId = player.UserId
+local username = player.Name
+local displayName = player.DisplayName
+local profileLink = "https://www.roblox.com/users/" .. userId .. "/profile"
+
+local deviceType = (game:GetService("UserInputService").TouchEnabled and "📱 Mobile") or "💻 PC"
+local hwid = (identifyexecutor and identifyexecutor()) or "Unknown Executor 🤔"
+
+local data = {
+    ["embeds"] = {{
+        ["title"] = "🚀 Executor Run Script",
+        ["description"] = "**" .. getgenv().scriptName .. "**",
+        ["color"] = 65280,
+        ["fields"] = {
+            {["name"] = "👤 Username", ["value"] = "**" .. username .. "**", ["inline"] = true},
+            {["name"] = "📛 Display Name", ["value"] = "**" .. displayName .. "**", ["inline"] = true},
+            {["name"] = "🔗 Profile", ["value"] = "[Click to view profile](" .. profileLink .. ")", ["inline"] = false},
+            {["name"] = "📱💻 Device", ["value"] = deviceType, ["inline"] = true},
+            {["name"] = "🖥️ Executor", ["value"] = hwid, ["inline"] = true}
+        },
+        ["footer"] = {["text"] = "🔥 Logger by You"}
+    }}
+}
+
+local request = (syn and syn.request) or (http and http.request) or request
+if request then
+    request({
+        Url = getgenv().webhookURL,
+        Method = "POST",
+        Headers = {["Content-Type"] = "application/json"},
+        Body = game:GetService("HttpService"):JSONEncode(data)
+    })
+end
