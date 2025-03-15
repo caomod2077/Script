@@ -1,8 +1,9 @@
 --Open source pls Credit me:(
+setclipboard("https://youtube.com/@caothieunang?si=8nCRL2eD9Wu0CsiA")
 local StarterGui = game:GetService("StarterGui")
     StarterGui:SetCore("SendNotification", {
         Title = "Dead Rail | Kill Aura V2",
-        Text = "Script make by Cáo Mod",
+        Text = "Script make by Cáo Mod pls Subscribe",
         Duration = 7
     })
 local StarterGui = game:GetService("StarterGui")
