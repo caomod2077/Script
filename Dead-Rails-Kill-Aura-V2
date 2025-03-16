@@ -2,7 +2,7 @@
 setclipboard("https://youtube.com/@caothieunang?si=8nCRL2eD9Wu0CsiA")
 local StarterGui = game:GetService("StarterGui")
     StarterGui:SetCore("SendNotification", {
-        Title = "Notification",
-        Text = "script paused please wait ",
+        Title = "Patched",
+        Text = "script is Patched :c",
         Duration = 10
     })
