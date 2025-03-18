@@ -6,3 +6,9 @@ local StarterGui = game:GetService("StarterGui")
         Text = "script is Patched :c",
         Duration = 10
     })
+local StarterGui = game:GetService("StarterGui")
+    StarterGui:SetCore("SendNotification", {
+        Title = "Thông báo cho vn",
+        Text = "lậy mấy bố script bị admin fix rồi đừng hỏi nữa",
+        Duration = 10
+    })
