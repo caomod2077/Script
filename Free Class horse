@@ -1,0 +1,18 @@
+local StarterGui = game:GetService("StarterGui")
+StarterGui:SetCore("SendNotification", {
+    Title = "Now you have the class horse.",
+    Text = "let's check",
+    Duration = 7
+})
+
+local args = {
+    [1] = "Horse"
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RemotePromise"):WaitForChild("Remotes"):WaitForChild("C_BuyClass"):FireServer(unpack(args))
+
+local args = {
+    [1] = "Horse"
+}
+
+game:GetService("ReplicatedStorage").Shared.RemotePromise.Remotes.C_EquipClass:FireServer(unpack(args))
