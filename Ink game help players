@@ -1,4 +1,4 @@
---open source 
+-- open source 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
@@ -86,12 +86,12 @@ d.MouseButton1Click:Connect(function()
                 if isPointInPolygon(posXZ, polygon) then
                     local prompt = hrp:FindFirstChild("CarryPrompt")
 
-                    if prompt and prompt:IsA("ProximityPrompt") then
-                        d.Text = "Help: " .. player.Name
+                    if prompt and prompt:IsA("ProximityPrompt") and prompt.Enabled then
+                        d.Text = "Helping: " .. player.Name
                         tpTo(hrp.CFrame + Vector3.new(0, 2, 0))
-                        task.wait(0.3)
+                        task.wait(0.4)
                         fireProximityPrompt(prompt)
-                        task.wait(0.6)
+                        task.wait(0.7)
                         tpTo(CFrame.new(-46, 1024, 110))
                         d.Text = "Done: " .. player.Name
                         task.wait(0.6)
@@ -104,6 +104,6 @@ d.MouseButton1Click:Connect(function()
     end
 
     d.Text = "No one to help"
-    task.wait(1)
+    task.wait(0.6)
     d.Text = "Help Player"
 end)
