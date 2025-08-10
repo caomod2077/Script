@@ -45,6 +45,18 @@ local function hopServer()
     end
 end
 
+task.spawn(function()
+    while task.wait(1) do
+        for _, char in pairs(workspace.Characters:GetChildren()) do
+            if char:FindFirstChild("Humanoid") and char:FindFirstChild("HumanoidRootPart") then
+                if char:FindFirstChild("Humanoid").DisplayName == LocalPlayer.DisplayName then
+                    hopServer()
+                end
+            end
+        end
+    end
+end)
+
 a = Instance.new("ScreenGui", game.CoreGui)
 a.Name = "gg"
 
