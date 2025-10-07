@@ -106,27 +106,31 @@ end
 enableHook()
 RunService.Heartbeat:Connect(function() end)
 
+--// Inf Stamina chuẩn
 local aux = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Upbolt/Hydroxide/revision/ohaux.lua"))()
-local scriptPath = game:GetService("ReplicatedStorage").Resources.Client.SprintHandler
-local closureName = "startSprint"
+
+-- đúng path mới
+local scriptPath = game:GetService("ReplicatedStorage").Resources.Client.MovementHandler.Stamina
+local closureName = "stepDrain"
 local closureConstants = {
-    [1] = "MoveDirection",
-    [2] = "Magnitude",
-    [3] = 0.2,
-    [4] = "Play",
-    [5] = "DestroyIdentifier",
-    [6] = "BaseRegen"
+    [1] = "MaxStamina",
+    [2] = "CancelExpires",
+    [3] = "reachedFull",
+    [4] = "Fire",
+    [5] = 0,
+    [6] = "reachedZero"
 }
 
-local closure1 = aux.searchClosure(scriptPath, closureName, 10, closureConstants)
-local closure2 = aux.searchClosure(scriptPath, closureName, 4, closureConstants)
+-- lấy closure ở upvalue 5 và 7 (theo Hydroxide scan)
+local closureA = aux.searchClosure(scriptPath, closureName, 5, closureConstants)
+local closureB = aux.searchClosure(scriptPath, closureName, 7, closureConstants)
 
 mainTab:Toggle("Inf Stamina", false, function(state)
-    if closure1 then
-        debug.getupvalue(closure1, 10)["MaxStamina"] = state and 1e308 or 100
+    if closureA then
+        debug.setupvalue(closureA, 5, state and 1e308 or 100)
     end
-    if closure2 then
-        debug.setupvalue(closure2, 4, state and 1e308 or 100)
+    if closureB then
+        debug.getupvalue(closureB, 7)["MaxStamina"] = state and 1e308 or 100
     end
 end)
 
