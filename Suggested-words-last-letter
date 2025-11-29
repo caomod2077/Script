@@ -1,0 +1,129 @@
+local url = "https://raw.githubusercontent.com/dwyl/english-words/refs/heads/master/words.txt"
+
+if not isfile("words.txt") then
+    local res = request({Url = url, Method = "GET"})
+    if res and res.Body then
+        writefile("words.txt", res.Body)
+    end
+end
+
+local Words = {}
+if isfile("words.txt") then
+    local content = readfile("words.txt")
+    for w in content:gmatch("[^\r\n]+") do
+        table.insert(Words, w)
+    end
+end
+
+local function SuggestWords(letter, count)
+    letter = letter:lower()
+    local possible = {}
+    for _, w in ipairs(Words) do
+        if w:sub(1,1):lower() == letter then
+            table.insert(possible, w)
+        end
+    end
+    local results = {}
+    local used = {}
+    while #results < count and #possible > 0 do
+        local r = math.random(1, #possible)
+        if not used[r] then
+            table.insert(results, possible[r])
+            used[r] = true
+        end
+    end
+    return results
+end
+
+local a = Instance.new("ScreenGui", game.CoreGui)
+a.Name = "skibidi"
+
+local b = Instance.new("Frame", a)
+b.Size = UDim2.new(0, 200, 0, 270)
+b.Position = UDim2.new(0, 80, 0, 100)
+b.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+b.BorderSizePixel = 0
+b.Active = true
+b.Draggable = true
+Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+Instance.new("UIStroke", b).Thickness = 1.5
+
+local e = Instance.new("TextLabel", b)
+e.Size = UDim2.new(1, -10, 0, 20)
+e.Position = UDim2.new(0,5,0,5)
+e.BackgroundTransparency = 1
+e.Text = "Credit: Cáo Mod"
+e.TextColor3 = Color3.fromRGB(255, 255, 255)
+e.Font = Enum.Font.GothamBold
+e.TextSize = 14
+e.TextXAlignment = Enum.TextXAlignment.Left
+e.TextYAlignment = Enum.TextYAlignment.Top
+e.TextWrapped = true
+
+local w = Instance.new("TextLabel", b)
+w.Size = UDim2.new(1, -10, 0, 30)
+w.Position = UDim2.new(0,5,0,25)
+w.BackgroundTransparency = 1
+w.Text = "Words may be wrong or not accepted by the game"
+w.TextColor3 = Color3.fromRGB(255, 100, 100)
+w.Font = Enum.Font.Gotham
+w.TextSize = 10
+w.TextXAlignment = Enum.TextXAlignment.Left
+w.TextYAlignment = Enum.TextYAlignment.Top
+w.TextWrapped = true
+
+local h = Instance.new("TextBox", b)
+h.PlaceholderText = "Nhập chữ..."
+h.Size = UDim2.new(1, -20, 0, 25)
+h.Position = UDim2.new(0, 10, 0, 45)
+h.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+h.TextColor3 = Color3.fromRGB(255, 255, 255)
+h.Text = ""
+h.ClearTextOnFocus = false
+h.Font = Enum.Font.Gotham
+h.TextSize = 13
+Instance.new("UICorner", h).CornerRadius = UDim.new(0, 4)
+
+h.Focused:Connect(function()
+    h.Text = ""
+end)
+
+local list = Instance.new("ScrollingFrame", b)
+list.Size = UDim2.new(1, -20, 0, 200)
+list.Position = UDim2.new(0, 10, 0, 75)
+list.BackgroundTransparency = 1
+list.ScrollBarThickness = 6
+list.CanvasSize = UDim2.new(0,0,0,0)
+list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+local uiList = Instance.new("UIListLayout", list)
+uiList.Padding = UDim.new(0, 2)
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
+
+local function UpdateSuggestions()
+    for _, child in ipairs(list:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+
+    local text = h.Text
+    if #text < 1 then return end
+
+    local suggests = SuggestWords(text:sub(1,1), 20)
+
+    for _, w in ipairs(suggests) do
+        local btn = Instance.new("TextButton", list)
+        btn.Size = UDim2.new(1, 0, 0, 20)
+        btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+        btn.TextColor3 = Color3.fromRGB(255,255,255)
+        btn.Font = Enum.Font.Gotham
+        btn.TextSize = 12
+        btn.Text = "- " .. w
+        btn.AutoButtonColor = true
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+        btn.Selectable = false
+    end
+end
+
+h:GetPropertyChangedSignal("Text"):Connect(UpdateSuggestions)
