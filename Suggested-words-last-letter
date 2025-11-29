@@ -110,7 +110,7 @@ local function UpdateSuggestions()
     local text = h.Text
     if #text < 1 then return end
 
-    local suggests = SuggestWords(text:sub(1,1), 20)
+    local suggests = SuggestWords(text:sub(1,1), 100)
 
     for _, w in ipairs(suggests) do
         local btn = Instance.new("TextButton", list)
