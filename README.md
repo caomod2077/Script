@@ -1,4 +1,4 @@
-<h1 align="center"><b>Gay script</b></h1>
+<h1 align="center"><b>Gay Hub</b></h1>
 
 <p align="center">
   <i>Skibidi toilet</i>
