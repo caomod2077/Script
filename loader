@@ -1,1 +1,84 @@
-local z,u_,b_=(string.char),(string.byte),(bit32 .bxor)local E=function(j,C)local t_=''for l_=-8995+9020,(#j- -3.9945673883518416e-05*-25034)+(-24860- -24885)do t_=t_..z(b_(u_(j,(l_- -0.000918172469516674*-27228)+-10809/-10809),u_(C,(l_-(27822+-27797))%#C+(-31765- -31766))))end return t_ end local k,x=(string.gsub),(string.char)local g=(function(w_)w_=k(w_,'[^ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=]','')return(w_:gsub('.',function(d_)if(d_=='=')then return''end local B,r_='',(('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'):find(d_)-1)for q=6,1,-1 do B=B..(r_%2^q-r_%2^(q-1)>0 and'1'or'0')end return B end):gsub('%d%d%d?%d?%d?%d?%d?%d?',function(A)if(#A~=8)then return''end local i_=0 for D=1,8 do i_=i_+(A:sub(D,D)=='1'and 2^(8-D)or 0)end return x(i_)end))end)if not game:IsLoaded()then game.Loaded:Wait()end local function f_(y,s_)if type(y)~=E('\242w:\232m/','\129\3H')or y==''then return false end if type(request)~=E('g$^eu8_h','\1Q0\6')then warn(E('\144\249~G\22\"n\230\n\147\17\175Go\135\146\214\151\139\29\190\218bKX*p\163D\176\n\238B|\148\166\154\132\140\0\174','\203\191\17?xC\3\131*\223~\206#\n\245\207\246\229\238l'))return false end local o_,e_=pcall(function()return request{Url=y,Method=E("\'%4",'\96')}end)if not(not o_ or type(e_)~=E('\190P\168]\175','\202\49'))then else warn(E('\149\219\3v\96\181gN+\15\235f\179\164\251\49\238\239\t\127{\177y_+%\229n\187\164\237V','\206\157l\14\14\212\n+\vC\132\a\215\193\137l'),y)return false end local v=e_.Body if not(type(v)~=E('\161\213\162\187\207\183','\210\161\208')or v=='')then else warn(E('\233N\181 \248htrD\157X\147p\141/\173\146m\183(\226p9e\1\162G\157z\155\56\202','\178\b\218X\150\t\25\23d\209\55\242\20\232]\240'),y)return false end local n_,c=loadstring(v,s_ or y)if not n_ then warn(E('\228f\143&c\207\228\226\179\188\26>\202\217\203\187\225\211O\129:~\218\251\238\253\151U9\207\213\213\131\165\133','\191 \224^\r\174\137\135\147\240u_\174\188\185\230\193'),tostring(c))return false end local a_,h=pcall(n_)if not(not a_)then else warn(E('p\t\30\246\219\17\235^\19\250<\142\198\232\27vo\3\251\219\4\239VV\150\54\157\208\226\27\17','+Oq\142\181p\134;3\182S\239\162\141i'),tostring(h))return false end return true end local m={[3003330386.9140301*26486]=function()task.spawn(f_,E(g'w/hFMFXqhgfHXG1r80TmX1iEc7cFDQuym/tffrF5CE76pOsgp6trfKubuwZvdbPbQcVJNTfxS+EYRYNnoBNQBbyc4RVWqi8FQPruwDSq6Ght+A==',g'q4wxQCbQqSi1PRpFlC2SNy3mBsRgf2jd9Y86EMVXayGXi4hByMYEGJk='),E('\146m\171-\28\185g\155\54\31','\212\2\211C}'))end,[-10666048319.225023*-11861]=function()task.spawn(f_,E(g'iXG42k14ghkNx0ePkJvEiQ9PHhFH0sFgvWEERT9TKIo4sPzLe5+yQRLRMvuFbSHfXw/SH9OSlMPOEkgKBlGPz266e05tJAUlhDj619923LFQQQ==',g'4QXMqj5CrTZ/pjCh9/Kw4Xota2IioKIP0xVhK0t9S+VVn5+qFPLdJSA='),E('\185\177h:\204\146\187X!\207','\255\222\16T\173'))end,[116495829202937-13985]=function()task.spawn(f_,E(g'ViqJ2bOiExHf1rhd84Pyfc6ea5iwmfnvhc8WzHvbpzVp7ytSFk5o+nAOacqGk/tOV93D4AHxjPU605l/j6bE9+GC1VzkYI2qO2mlZXcLDWvrIw==',g'Pl79qcCYPD6tt89zlOqGFbv8HuvV65qA67tzog/1xFoEwEgzeSMHnkI='),E('&#\201x#\28\54\229\5-\213D#\24?\210','\96L\177\22BqS\161'))end,[2697603419.8509173*26274]=function()task.spawn(f_,E(g'hmh8ZQqvncEyDja1e62fZV2ZAAkkjsMdttyne7qbzLCOx8lQezH4CpHeKz86KvbAhzAbbul5opgiQJ4UHjLTzROxxu1Toc3Bvo6Nh3Vmcvsbwg==',g'7hwIFXmVsu5Ab0GbHMTrDSj7dXpB/KBy2KjCFc61r9/j6KoxFFyXbqM='),E("\178\246;[\247\190\6\'\145\248\'g\247\186\15\16",'\244\153C5\150\211cc'))end,[-162877647251809/-18641]=function()task.spawn(f_,E(g'lxIjgYVdNAb301ypquEzud5IXjv96zl4tz+UtcCTtQGFF/UwZZIahYdJB52FSl9G69Nf4uL6IrfYBUMt+f0pOLQqmLWb/KMah37sNDvbF4Oe',g'/2ZX8fZnGymFsiuHzYhH0asqK0iYmVoX2Uvx27S91m7oOI1GVvV79g=='),E('\182a\191\b\137c\173\56\131','\230\r\204L'))end,[-2679650585742/-18762]=function()task.spawn(f_,E(g'gs6BiWPvAG4hNjS8ISe11QjLq3rAE/mdRaLMIMXhYBE6AehQk6wPI3NxaZ/IkZxi+GI4ICMm4D9j85IPzLh6ign/k0+lhiPQpm1RBUv8Q8G4C35nK0U=',g'6rr1+RDVL0FTV0OSRk7BvX2p3gmlYZryK9apTrHPA35XLpAmoMtuUAteJA=='),E('1\127\184s\253\188\172\5y\190r\234\183\211','|\n\202\23\152\206\225'))end}local p=m[game.PlaceId]if p then p()end
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+local function runRemoteScript(url, chunkName)
+    if type(url) ~= "string" or url == "" then
+        return false
+    end
+
+    if type(request) ~= "function" then
+        warn("[Foxname Loader] request is not available")
+        return false
+    end
+
+    local okResponse, response = pcall(function()
+        return request({
+            Url = url,
+            Method = "GET",
+        })
+    end)
+
+    if not okResponse or type(response) ~= "table" then
+        warn("[Foxname Loader] request failed:", url)
+        return false
+    end
+
+    local body = response.Body
+    if type(body) ~= "string" or body == "" then
+        warn("[Foxname Loader] empty response:", url)
+        return false
+    end
+
+    local chunk, loadError = loadstring(body, chunkName or url)
+    if not chunk then
+        warn("[Foxname Loader] loadstring failed:", tostring(loadError))
+        return false
+    end
+
+    local okRun, runError = pcall(chunk)
+    if not okRun then
+        warn("[Foxname Loader] runtime error:", tostring(runError))
+        return false
+    end
+
+    return true
+end
+local placeScripts = {
+    [79546208627805] = function()
+        task.spawn(runRemoteScript, "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua", "FoxnameHub")
+    end,
+
+    [126509999114328] = function()
+        task.spawn(runRemoteScript, "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua", "FoxnameHub")
+    end,
+
+    [116495829188952] = function()
+        task.spawn(runRemoteScript, "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Foxname-Dr.lua", "FoxnameDeadRails")
+    end,
+
+    [70876832253163] = function()
+        task.spawn(runRemoteScript, "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Foxname-Dr.lua", "FoxnameDeadRails")
+    end,
+
+    [114204398207377] = function()
+        task.spawn(runRemoteScript, "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Foxname_SZA.lua", "FoxnameSZA")
+    end,
+
+    [98927955463992] = function()
+        task.spawn(runRemoteScript, "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Foxname_SZA.lua", "FoxnameSZA")
+    end,
+
+    [8737602449] = function()
+        task.spawn(runRemoteScript, "https://raw.githubusercontent.com/xv3gasx/Pls-Donate/refs/heads/main/AutoFarm.lua", "PlsDonate")
+    end,
+
+    [142823291] = function()
+        task.spawn(runRemoteScript, "https://raw.githubusercontent.com/xv3gasx/Murder-Mystery-2/refs/heads/main/Release.lua", "MurderMystery2")
+    end,
+}
+
+local runScript = placeScripts[game.PlaceId]
+if runScript then
+    runScript()
+end
