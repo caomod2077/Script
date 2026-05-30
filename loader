@@ -44,6 +44,7 @@ local function runRemoteScript(url, chunkName)
 
     return true
 end
+
 local placeScripts = {
     [79546208627805] = function()
         task.spawn(runRemoteScript, "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua", "FoxnameHub")
@@ -75,6 +76,10 @@ local placeScripts = {
 
     [142823291] = function()
         task.spawn(runRemoteScript, "https://raw.githubusercontent.com/xv3gasx/Murder-Mystery-2/refs/heads/main/Release.lua", "MurderMystery2")
+    end,
+
+    [621129760] = function()
+        task.spawn(runRemoteScript, "https://raw.githubusercontent.com/xv3gasx/KAT/refs/heads/main/main.lua", "KAT")
     end,
 }
 
