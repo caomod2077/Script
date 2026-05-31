@@ -81,6 +81,10 @@ local placeScripts = {
     [621129760] = function()
         task.spawn(runRemoteScript, "https://raw.githubusercontent.com/xv3gasx/KAT/refs/heads/main/main.lua", "KAT")
     end,
+
+    [12137249458] = function()
+        task.spawn(runRemoteScript, "https://raw.githubusercontent.com/xv3gasx/Gun-Grounds-FFA/refs/heads/main/main.lua", "GGF")
+    end,
 }
 
 local runScript = placeScripts[game.PlaceId]
