@@ -112,14 +112,14 @@ local placeScripts = {
     end,
     
     -- Build A Ring Farm
-    [] = function()
+    [107646426076756] = function()
         task.spawn(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Fn_BARF.lua"))()
         end)
     end,    
     
     -- Murder Mystery 2
-    [] = function()
+    [142823291] = function()
         task.spawn(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/xv3gasx/Murder-Mystery-2/refs/heads/main/Release.lua"))()
         end)
