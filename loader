@@ -50,9 +50,6 @@ local placeScripts = {
             loadstring(game:HttpGet(
                 "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Foxname_SZA.lua"))()
         end)
-        task.spawn(function()
-            loadstring(game:HttpGet("https://afkar.lol/script/godmode"))()
-        end)
     end,
 
     -- 99 Nights In The Forest (Lobby)
