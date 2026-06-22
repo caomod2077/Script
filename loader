@@ -86,7 +86,7 @@ local placeScripts = {
     [97598239454123] = function()
         task.wait(5)
         task.spawn(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FN_GAG2_skibidi.lua"))()
         end)
     end,
 
@@ -94,7 +94,7 @@ local placeScripts = {
     [97598239454123] = function()
         task.wait(5)
         task.spawn(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FN_GAG2_skibidi.lua"))()
         end)
     end,
 }
