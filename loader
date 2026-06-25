@@ -84,7 +84,6 @@ local placeScripts = {
 
     -- Grow a Garden 2
     [97598239454123] = function()
-        task.wait(5)
         task.spawn(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FN_GAG2_skibidi.lua"))()
         end)
@@ -92,7 +91,6 @@ local placeScripts = {
 
     -- Grow a Garden 2 different place id
     [97598239454123] = function()
-        task.wait(5)
         task.spawn(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FN_GAG2_skibidi.lua"))()
         end)
