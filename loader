@@ -66,6 +66,13 @@ local placeScripts = {
         end)
     end,
 
+    -- 99 Nights In The Forest (Update Party)
+    [126371807511901] = function()
+        task.spawn(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))();
+        end)
+    end,
+
     -- Dead Rails (Lobby)
     [116495829188952] = function()
         task.spawn(function()
