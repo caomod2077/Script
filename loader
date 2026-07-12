@@ -2,14 +2,14 @@ local TeleportService = game:GetService("TeleportService")
 local player = game:GetService("Players").LocalPlayer
 local placeScripts = {
     -- Animal Hospital
-    [78515283254292]
+    [78515283254292] = function()
         task.spawn(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FN_AnimalHospital.lua"))()
         end)
     end,  
 
     -- Animal Hospital (Game)
-    [104522435597696]
+    [104522435597696] = function()
         task.spawn(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FN_AnimalHospital.lua"))()
         end)
