@@ -4,21 +4,21 @@ local placeScripts = {
     -- 99 Nights In The Forest (Lobby)
     [79546208627805] = function()
         task.spawn(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))();
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FNDayFarm.lua"))();
         end)
     end,
 
     -- 99 Nights In The Forest (Game)
     [126509999114328] = function()
         task.spawn(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))();
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FNDayFarm.lua"))();
         end)
     end,
 
     -- 99 Nights In The Forest (Update Party)
     [126371807511901] = function()
         task.spawn(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))();
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FNDayFarm.lua"))();
         end)
     end,
 
