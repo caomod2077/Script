@@ -8,6 +8,13 @@ local placeScripts = {
         end)
     end,  
 
+    -- Steal An Egg
+    [107778070777162] = function()
+        task.spawn(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Fn-stealanegg.lua"))()
+        end)
+    end,
+
     -- Animal Hospital (Game)
     [104522435597696] = function()
         task.spawn(function()
@@ -104,13 +111,6 @@ local placeScripts = {
     end,
 
     -- Grow a Garden 2
-    [97598239454123] = function()
-        task.spawn(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FN_GAG2_skibidi.lua"))()
-        end)
-    end,
-
-    -- Grow a Garden 2 different place id
     [97598239454123] = function()
         task.spawn(function()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FN_GAG2_skibidi.lua"))()
