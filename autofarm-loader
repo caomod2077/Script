@@ -26,7 +26,7 @@ local placeScripts = {
     [116495829188952] = function()
         task.spawn(function()
             task.wait(3)
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Foxname-Dr.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/afkar-gg/sc/refs/heads/main/auto-bond"))()
         end)
     end,
 
@@ -34,7 +34,7 @@ local placeScripts = {
     [70876832253163] = function()
         task.spawn(function()
             task.wait(5)
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Foxname-Dr.lua"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/afkar-gg/sc/refs/heads/main/auto-bond"))()
         end)
     end,
 
