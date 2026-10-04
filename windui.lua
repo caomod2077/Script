@@ -10578,7 +10578,7 @@ Desc=am.Desc,
 Icon=am.Icon,
 IconThemed=am.IconThemed,
 TextXAlignment=am.TextXAlignment or"Left",
-TextSize=am.TextSize or 15,
+TextSize=am.TextSize or 16,
 DescTextSize=am.DescTextSize or 13,
 Box=true,
 BoxBorder=true,
@@ -10589,7 +10589,7 @@ DescTextTransparency=am.DescTextTransparency or 0.45,
 Opened=am.Opened~=false,
 UIElements={},
 
-HeaderSize=38,
+HeaderSize=40,
 IconSize=18,
 Padding=10,
 
@@ -10693,9 +10693,9 @@ rightChevronFrame,
 
 local dividerLine=af("Frame",{
 Size=UDim2.new(1,0,0,1),
-ThemeTag={BackgroundColor3="SectionBoxBorder"},
-BackgroundColor3=Color3.fromRGB(48,40,36),
-BackgroundTransparency=0.8,
+ThemeTag={BackgroundColor3="Outline"},
+BackgroundColor3=Color3.fromRGB(255,255,255),
+BackgroundTransparency=0.88,
 BorderSizePixel=0,
 Name="Divider",
 LayoutOrder=2,
@@ -10723,6 +10723,7 @@ SortOrder="LayoutOrder",
 }),
 })
 
+-- Semi-transparent card background matching image-1791095014617.png
 local at=aa.NewRoundFrame(10,"Squircle",{
 Size=UDim2.new(1,0,0,0),
 BackgroundTransparency=1,
@@ -10730,20 +10731,18 @@ Parent=am.Parent,
 AutomaticSize="Y",
 ThemeTag={
 ImageColor3="SectionBoxBackground",
-ImageTransparency="SectionBoxBackgroundTransparency",
 },
-ImageColor3=Color3.fromRGB(22,19,18),
-ImageTransparency=0,
+ImageColor3=Color3.fromRGB(0,0,0),
+ImageTransparency=0.72,
 },{
 aa.NewRoundFrame(9,"SquircleOutline",{
 Size=UDim2.new(1,0,0,0),
 AutomaticSize="Y",
 ThemeTag={
 ImageColor3="SectionBoxBorder",
-ImageTransparency="SectionBoxBorderTransparency",
 },
-ImageColor3=Color3.fromRGB(48,40,36),
-ImageTransparency=0.85,
+ImageColor3=Color3.fromRGB(255,255,255),
+ImageTransparency=0.82,
 Name="Outline",
 ClipsDescendants=true,
 },{
@@ -11622,8 +11621,8 @@ UICorner=Window.UICorner-(Window.UIPadding/2),
 
 Gap=Window.NewElements and 1 or 6,
 
-TabPaddingX=4+(Window.UIPadding/2),
-TabPaddingY=3+(Window.UIPadding/2),
+TabPaddingX=6+(Window.UIPadding/2),
+TabPaddingY=5+(Window.UIPadding/2),
 TitlePaddingY=0,
 }
 
@@ -11700,10 +11699,10 @@ Text=ar.Title,
 ThemeTag={
 TextColor3="TabTitle",
 },
-TextTransparency=not ar.Locked and 0.4 or 0.7,
-TextSize=15,
+TextTransparency=not ar.Locked and 0.25 or 0.6,
+TextSize=17,
 Size=UDim2.new(1,0,0,0),
-FontFace=Font.new(ak.Font,Enum.FontWeight.Medium),
+FontFace=Font.new(ak.Font,Enum.FontWeight.SemiBold),
 TextWrapped=true,
 RichText=true,
 AutomaticSize="Y",
@@ -11742,7 +11741,7 @@ ar.IconColor and false or true,
 ar.IconThemed,
 "TabIcon"
 )
-au.Size=UDim2.new(0,16,0,16)
+au.Size=UDim2.new(0,18,0,18)
 if ar.IconColor then
 au.ImageLabel.ImageColor3=ar.IconColor
 end
@@ -13150,20 +13149,17 @@ local function CheckIsMobile()
 if av.Mobile ~= nil then return av.Mobile end
 if av.IsMobile ~= nil then return av.IsMobile end
 local touch = af and af.TouchEnabled
-local mouse = af and af.MouseEnabled
 local plat
 pcall(function() plat = af:GetPlatform() end)
 if plat == Enum.Platform.IOS or plat == Enum.Platform.Android then
 return true
 end
+if touch then return true end
 if al and al.ViewportSize then
 local minDim = math.min(al.ViewportSize.X, al.ViewportSize.Y)
-if minDim > 0 and minDim <= 520 then
+if minDim > 0 and minDim <= 540 then
 return true
 end
-end
-if touch and not mouse then
-return true
 end
 return false
 end
@@ -13174,20 +13170,13 @@ if isMobileDevice then
 aw.IsPC = false
 end
 
-aw.MinSize = av.MinSize or (isMobileDevice and Vector2.new(440, 280) or Vector2.new(560, 360))
+aw.MinSize = av.MinSize or Vector2.new(500, 320)
 aw.MaxSize = av.MaxSize or Vector2.new(2560, 1600)
 
-if isMobileDevice and aw.SideBarWidth and aw.SideBarWidth > 165 then
-aw.SideBarWidth = 155
-end
-
-local defaultW = isMobileDevice and 740 or 860
-local defaultH = isMobileDevice and 470 or 540
+local defaultW = isMobileDevice and 880 or 920
+local defaultH = isMobileDevice and 580 or 600
 
 local ax = aw.Size or UDim2.new(0, defaultW, 0, defaultH)
-if isMobileDevice and ax.X.Offset > 780 and ax.X.Scale == 0 then
-ax = UDim2.new(0, 750, 0, math.min(ax.Y.Offset, 480))
-end
 
 aw.Size = UDim2.new(
 ax.X.Scale,
@@ -13204,7 +13193,6 @@ aw.ElementConfig={
 UIPadding=(aw.NewElements and 10 or 13),
 UICorner=aw.ElementsRadius or(aw.NewElements and 23 or 16),
 }
-
 if aw.Topbar=={}then
 aw.Topbar={Height=52,ButtonsType="Default"}
 end
@@ -14693,25 +14681,21 @@ if not al or not al.ViewportSize then return 1 end
 local view = al.ViewportSize
 if view.X < 50 or view.Y < 50 then return 1 end
 
-local isPhone = aw.IsMobile or (math.min(view.X, view.Y) <= 520)
+local winW = (aw.Size and aw.Size.X.Offset > 0) and aw.Size.X.Offset or 880
+local winH = (aw.Size and aw.Size.Y.Offset > 0) and aw.Size.Y.Offset or 580
 
-local marginX = isPhone and math.max(math.floor(view.X * 0.08), 24) or 40
-local marginY = isPhone and math.max(math.floor(view.Y * 0.10), 20) or 40
+-- Target height on screen: ~84% of viewport height (matches image-1791098796321.png)
+local targetH = view.Y * 0.85
+local targetW = view.X * 0.76
 
-local availW = math.max(view.X - (marginX * 2), 100)
-local availH = math.max(view.Y - (marginY * 2), 100)
+local scaleH = targetH / winH
+local scaleW = targetW / winW
 
-local winW = (aw.Size and aw.Size.X.Offset > 0) and aw.Size.X.Offset or 760
-local winH = (aw.Size and aw.Size.Y.Offset > 0) and aw.Size.Y.Offset or 480
-
-local scaleW = availW / winW
-local scaleH = availH / winH
-local fit = math.min(scaleW, scaleH)
-
-if isPhone then
-return math.clamp(fit, 0.38, 0.68)
+local fit = math.min(scaleH, scaleW)
+if aw.IsMobile or (math.min(view.X, view.Y) <= 540) then
+return math.clamp(fit, 0.55, 0.90)
 else
-return math.clamp(fit, 0.45, 1.0)
+return math.clamp(fit, 0.60, 1.05)
 end
 end
 
@@ -14721,14 +14705,13 @@ if aw.AutoScale and al and al.ViewportSize and al.ViewportSize.Y > 50 then
 local best = CalculateBestScale()
 targetScale = math.min(targetScale, best)
 end
-targetScale = math.clamp(targetScale, 0.35, 1.25)
+targetScale = math.clamp(targetScale, 0.45, 1.25)
 av.WindUI.UIScale=targetScale
 if av.WindUI.UIScaleObj then
 ap(av.WindUI.UIScaleObj,0.2,{Scale=targetScale},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
 end
 return aw
 end
-
 function aw.SetToTheCenter(C)
 ap(
 aw.UIElements.Main,
