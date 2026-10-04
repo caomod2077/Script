@@ -574,8 +574,10 @@ SectionBox="Text",
 SectionBoxTransparency=0.95,
 SectionBoxBorder="White",
 SectionBoxBorderTransparency=0.75,
-SectionBoxBackground="Text",
-SectionBoxBackgroundTransparency=0.97,
+SectionBoxBackground="Dialog",
+SectionBoxBackgroundTransparency=0,
+SectionBoxBorder="Outline",
+SectionBoxBorderTransparency=0.85,
 
 SearchBarBorder="White",
 SearchBarBorderTransparency=0.75,
@@ -10617,13 +10619,10 @@ ao.Size=UDim2.new(0,an.IconSize,0,an.IconSize)
 end
 end
 
-local ap=af("Frame",{
-Size=UDim2.new(0,an.IconSize,0,an.IconSize),
-BackgroundTransparency=1,
-Visible=true,
-},{
-af("ImageLabel",{
-Size=UDim2.new(1,0,1,0),
+local ap=af("ImageLabel",{
+Size=UDim2.new(0,14,0,14),
+AnchorPoint=Vector2.new(0.5,0.5),
+Position=UDim2.new(0.5,0,0.5,0),
 BackgroundTransparency=1,
 Image=aa.Icon"chevron-down"[1],
 ImageRectSize=aa.Icon"chevron-down"[2].ImageRectSize,
@@ -10633,48 +10632,96 @@ ImageTransparency="SectionExpandIconTransparency",
 ImageColor3="SectionExpandIcon",
 },
 Rotation=an.Opened and 180 or 0,
-}),
 })
 
 if an.Icon then
 an:SetIcon(an.Icon)
 end
 
-local aq=af("Frame",{
-Size=UDim2.new(1,-an.IconSize-16,0,0),
-AutomaticSize="Y",
-BackgroundTransparency=1,
-},{
-af("UIListLayout",{
-FillDirection="Vertical",
-HorizontalAlignment=an.TextXAlignment,
-VerticalAlignment="Center",
-Padding=UDim.new(0,2),
-}),
-})
-
-local function createTitle(at,au)
-return af("TextLabel",{
+local titleLabel=af("TextLabel",{
 BackgroundTransparency=1,
 TextXAlignment=an.TextXAlignment,
-AutomaticSize="XY",
-TextSize=au=="Title"and an.TextSize or an.DescTextSize,
-TextTransparency=au=="Title"and an.TextTransparency or an.DescTextTransparency,
+AutomaticSize="X",
+Size=UDim2.new(0,0,1,0),
+TextSize=an.TextSize,
+TextTransparency=an.TextTransparency,
 ThemeTag={
 TextColor3="Text",
 },
-FontFace=Font.new(aa.Font,au=="Title"and an.FontWeight or an.DescFontWeight),
-Text=at,
-TextWrapped=true,
-Parent=aq,
+FontFace=Font.new(aa.Font,an.FontWeight),
+Text=an.Title,
+TextTruncate="AtEnd",
+Name="Title",
 })
-end
 
-local ar=createTitle(an.Title,"Title")
-local as
-if an.Desc then
-as=createTitle(an.Desc,"Desc")
-end
+local leftHeaderFrame=af("Frame",{
+Size=UDim2.new(1,-36,1,0),
+Position=UDim2.new(0,12,0,0),
+AnchorPoint=Vector2.new(0,0),
+BackgroundTransparency=1,
+},{
+af("UIListLayout",{
+FillDirection="Horizontal",
+VerticalAlignment="Center",
+HorizontalAlignment="Left",
+Padding=UDim.new(0,8),
+SortOrder="LayoutOrder",
+}),
+ao,
+titleLabel,
+})
+
+local rightChevronFrame=af("Frame",{
+Size=UDim2.new(0,24,1,0),
+Position=UDim2.new(1,-8,0.5,0),
+AnchorPoint=Vector2.new(1,0.5),
+BackgroundTransparency=1,
+},{
+ap,
+})
+
+local topButton=af("TextButton",{
+Size=UDim2.new(1,0,0,an.HeaderSize),
+BackgroundTransparency=1,
+Text="",
+Name="Top",
+LayoutOrder=1,
+},{
+leftHeaderFrame,
+rightChevronFrame,
+})
+
+local dividerLine=af("Frame",{
+Size=UDim2.new(1,0,0,1),
+ThemeTag={BackgroundColor3="SectionBoxBorder"},
+BackgroundColor3=Color3.fromRGB(48,40,36),
+BackgroundTransparency=0.8,
+BorderSizePixel=0,
+Name="Divider",
+LayoutOrder=2,
+})
+
+local contentFrame=af("Frame",{
+BackgroundTransparency=1,
+Size=UDim2.new(1,0,0,0),
+AutomaticSize="Y",
+Name="Content",
+Visible=an.Opened,
+LayoutOrder=3,
+},{
+af("UIPadding",{
+PaddingLeft=UDim.new(0,10),
+PaddingRight=UDim.new(0,10),
+PaddingBottom=UDim.new(0,10),
+PaddingTop=UDim.new(0,8),
+}),
+af("UIListLayout",{
+FillDirection="Vertical",
+Padding=UDim.new(0,6),
+VerticalAlignment="Top",
+SortOrder="LayoutOrder",
+}),
+})
 
 local at=aa.NewRoundFrame(10,"Squircle",{
 Size=UDim2.new(1,0,0,0),
@@ -10682,9 +10729,10 @@ BackgroundTransparency=1,
 Parent=am.Parent,
 AutomaticSize="Y",
 ThemeTag={
-ImageTransparency="SectionBoxBackgroundTransparency",
 ImageColor3="SectionBoxBackground",
+ImageTransparency="SectionBoxBackgroundTransparency",
 },
+ImageColor3=Color3.fromRGB(22,19,18),
 ImageTransparency=0,
 },{
 aa.NewRoundFrame(9,"SquircleOutline",{
@@ -10692,59 +10740,22 @@ Size=UDim2.new(1,0,0,0),
 AutomaticSize="Y",
 ThemeTag={
 ImageColor3="SectionBoxBorder",
+ImageTransparency="SectionBoxBorderTransparency",
 },
-ImageTransparency=0.6,
+ImageColor3=Color3.fromRGB(48,40,36),
+ImageTransparency=0.85,
 Name="Outline",
 ClipsDescendants=true,
 },{
-af("TextButton",{
-Size=UDim2.new(1,0,0,an.HeaderSize),
-BackgroundTransparency=1,
-Text="",
-Name="Top",
-},{
-af("UIPadding",{
-PaddingTop=UDim.new(0,8),
-PaddingLeft=UDim.new(0,12),
-PaddingRight=UDim.new(0,12),
-PaddingBottom=UDim.new(0,8),
-}),
-ao,
-aq,
-af("UIListLayout",{
-Padding=UDim.new(0,8),
-FillDirection="Horizontal",
-VerticalAlignment="Center",
-HorizontalAlignment="Left",
-}),
-ap,
-}),
-af("Frame",{
-Size=UDim2.new(1,0,0,1),
-ThemeTag={BackgroundColor3="SectionBoxBorder"},
-BackgroundTransparency=0.7,
-BorderSizePixel=0,
-Name="Divider",
-}),
-af("Frame",{
-BackgroundTransparency=1,
-Size=UDim2.new(1,0,0,0),
-AutomaticSize="Y",
-Name="Content",
-Visible=an.Opened,
-},{
-af("UIPadding",{
-PaddingLeft=UDim.new(0,10),
-PaddingRight=UDim.new(0,10),
-PaddingBottom=UDim.new(0,10),
-PaddingTop=UDim.new(0,6),
-}),
 af("UIListLayout",{
 FillDirection="Vertical",
-Padding=UDim.new(0,6),
+SortOrder="LayoutOrder",
+Padding=UDim.new(0,0),
 VerticalAlignment="Top",
 }),
-}),
+topButton,
+dividerLine,
+contentFrame,
 }),
 })
 
@@ -10752,7 +10763,7 @@ an.ElementFrame=at
 
 local au=am.ElementsModule
 
-au.Load(an,at.Outline.Content,au.Elements,am.Window,am.WindUI,function()
+au.Load(an,contentFrame,au.Elements,am.Window,am.WindUI,function()
 if not an.Expandable then
 an.Expandable=true
 end
@@ -10763,15 +10774,11 @@ end,au,am.UIScale,am.Tab)
 
 function an.SetTitle(av,aw)
 an.Title=aw
-ar.Text=aw
+titleLabel.Text=aw
 end
 
 function an.SetDesc(av,aw)
 an.Desc=aw
-if not as then
-as=createTitle(aw,"Desc")
-end
-as.Text=aw
 end
 
 function an.Destroy(av)
@@ -10783,17 +10790,17 @@ end
 
 function an.Open(av)
 an.Opened=true
-at.Outline.Content.Visible=true
-ap.ImageLabel.Rotation=180
+contentFrame.Visible=true
+ap.Rotation=180
 end
 
 function an.Close(av)
 an.Opened=false
-at.Outline.Content.Visible=false
-ap.ImageLabel.Rotation=0
+contentFrame.Visible=false
+ap.Rotation=0
 end
 
-aa.AddSignal(at.Outline.Top.MouseButton1Click,function()
+aa.AddSignal(topButton.MouseButton1Click,function()
 if an.Opened then
 an:Close()
 else
