@@ -5298,12 +5298,14 @@ BackgroundTransparency=.9,
 
 local al=ac("Frame",{
 Size=UDim2.new(0,0,0,0),
-Position=UDim2.new(0.5,0,0,28),
+Position=UDim2.new(0.5,0,0,85),
 AnchorPoint=Vector2.new(0.5,0.5),
 Parent=af.Parent,
 BackgroundTransparency=1,
 Active=true,
 Visible=false,
+Name="OpenButton",
+ZIndex=999999,
 })
 
 
@@ -5469,6 +5471,8 @@ end
 
 if ar.Position and al then
 al.Position=ar.Position
+elseif al and al.Position.Y.Offset <= 35 then
+al.Position=UDim2.new(0.5,0,0,85)
 end
 
 if ar.OnlyIcon==true and ai then
