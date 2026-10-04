@@ -6135,6 +6135,23 @@ PaddingBottom=UDim.new(0,ah.UIPadding),
 ah.UIElements.Main=d
 ah.UIElements.Locked=av
 
+local elemScale = ab("UIScale", {
+Scale = 1,
+Parent = d,
+})
+
+aa.AddSignal(d.MouseButton1Down, function()
+if not ah.Locked then
+ad(elemScale, 0.1, { Scale = 0.982 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+end
+end)
+aa.AddSignal(d.MouseButton1Up, function()
+ad(elemScale, 0.22, { Scale = 1 }, Enum.EasingStyle.Back, Enum.EasingDirection.Out):Play()
+end)
+aa.AddSignal(d.MouseLeave, function()
+ad(elemScale, 0.18, { Scale = 1 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+end)
+
 if ah.Hover then
 aa.AddSignal(d.MouseEnter,function()
 if am then
@@ -10593,6 +10610,8 @@ DescFontWeight=am.DescFontWeight or Enum.FontWeight.Medium,
 TextTransparency=am.TextTransparency or 0.05,
 DescTextTransparency=am.DescTextTransparency or 0.45,
 Opened=am.Opened~=false,
+Badge=am.Badge,
+BadgeColor=am.BadgeColor,
 UIElements={},
 
 HeaderSize=40,
@@ -10658,6 +10677,7 @@ FontFace=Font.new(aa.Font,an.FontWeight),
 Text=an.Title,
 TextTruncate="AtEnd",
 Name="Title",
+LayoutOrder=2,
 })
 
 local leftHeaderFrame=af("Frame",{
@@ -10676,6 +10696,41 @@ SortOrder="LayoutOrder",
 ao,
 titleLabel,
 })
+
+if ao then
+ao.LayoutOrder=1
+end
+
+local badgeLabel
+function an.AddBadge(self, text, color)
+if not badgeLabel then
+badgeLabel = af("TextLabel", {
+BackgroundTransparency = 0.85,
+BackgroundColor3 = color or Color3.fromRGB(0, 145, 255),
+TextColor3 = color or Color3.fromRGB(0, 145, 255),
+Text = " " .. tostring(text) .. " ",
+TextSize = 11,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Bold),
+AutomaticSize = "XY",
+Parent = leftHeaderFrame,
+LayoutOrder = 99,
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 5) }),
+af("UIPadding", { PaddingTop = UDim.new(0, 2), PaddingBottom = UDim.new(0, 2), PaddingLeft = UDim.new(0, 5), PaddingRight = UDim.new(0, 5) }),
+})
+else
+badgeLabel.Text = " " .. tostring(text) .. " "
+if color then
+badgeLabel.BackgroundColor3 = color
+badgeLabel.TextColor3 = color
+end
+end
+return badgeLabel
+end
+
+if an.Badge then
+an:AddBadge(an.Badge, an.BadgeColor)
+end
 
 local rightChevronFrame=af("Frame",{
 Size=UDim2.new(0,24,1,0),
@@ -10766,6 +10821,41 @@ contentFrame,
 }),
 })
 
+local cardScale = af("UIScale", {
+Scale = 1,
+Parent = at,
+})
+
+local outlineFrame = at:FindFirstChild("Outline")
+
+-- Interactive Card Hover Glow
+aa.AddSignal(topButton.MouseEnter, function()
+ai(topButton, 0.16, { BackgroundTransparency = 0.94 }):Play()
+if outlineFrame then
+ai(outlineFrame, 0.22, { ImageTransparency = 0.65 }):Play()
+end
+ai(dividerLine, 0.2, { BackgroundTransparency = 0.72 }):Play()
+ai(titleLabel, 0.16, { TextTransparency = 0 }):Play()
+end)
+
+aa.AddSignal(topButton.MouseLeave, function()
+ai(topButton, 0.2, { BackgroundTransparency = 1 }):Play()
+if outlineFrame then
+ai(outlineFrame, 0.25, { ImageTransparency = 0.85 }):Play()
+end
+ai(dividerLine, 0.25, { BackgroundTransparency = 0.88 }):Play()
+ai(titleLabel, 0.2, { TextTransparency = an.TextTransparency }):Play()
+end)
+
+-- Tactile click compression
+aa.AddSignal(topButton.MouseButton1Down, function()
+ai(cardScale, 0.1, { Scale = 0.99 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+end)
+
+aa.AddSignal(topButton.MouseButton1Up, function()
+ai(cardScale, 0.22, { Scale = 1 }, Enum.EasingStyle.Back, Enum.EasingDirection.Out):Play()
+end)
+
 an.ElementFrame=at
 
 local au=am.ElementsModule
@@ -10798,13 +10888,24 @@ end
 function an.Open(av)
 an.Opened=true
 contentFrame.Visible=true
-ap.Rotation=180
+ai(ap, 0.32, { Rotation = 180 }, Enum.EasingStyle.Back, Enum.EasingDirection.Out):Play()
+ai(dividerLine, 0.25, { BackgroundTransparency = 0.88 }):Play()
 end
 
 function an.Close(av)
 an.Opened=false
 contentFrame.Visible=false
-ap.Rotation=0
+ai(ap, 0.25, { Rotation = 0 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+ai(dividerLine, 0.25, { BackgroundTransparency = 1 }):Play()
+end
+
+function an.Flash(self, color)
+if outlineFrame then
+local origColor = outlineFrame.ImageColor3
+local flashCol = color or Color3.fromRGB(0, 145, 255)
+outlineFrame.ImageColor3 = flashCol
+ai(outlineFrame, 0.45, { ImageColor3 = origColor, ImageTransparency = 0.85 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+end
 end
 
 aa.AddSignal(topButton.MouseButton1Click,function()
@@ -12203,6 +12304,22 @@ function ar.Select(aB)
 return ao:SelectTab(ar.Index)
 end
 
+function ar.CollapseAll(aB)
+for _, c in ipairs(ar.Elements) do
+if c and c.__type == "Section" and c.Close then
+c:Close()
+end
+end
+end
+
+function ar.ExpandAll(aB)
+for _, c in ipairs(ar.Elements) do
+if c and c.__type == "Section" and c.Open then
+c:Open()
+end
+end
+end
+
 local bEmpty=al("Frame",{
 BackgroundTransparency=1,
 Size=UDim2.new(1,0,0,160),
@@ -12257,6 +12374,8 @@ function ao.SelectTab(ap,aq)
 if not ao.Tabs[aq].Locked then
 ao.SelectedTab=aq
 
+local ts = game:GetService"TweenService"
+
 for ar,as in next,ao.Tabs do
 if not as.Locked then
 ak.SetThemeTag(as.UIElements.Main,{
@@ -12275,49 +12394,57 @@ ak.SetThemeTag(as.UIElements.Icon.ImageLabel,{
 ImageTransparency="TabIconTransparency",
 },0.15)
 end
+if as.UIElements.Main and as.UIElements.Main.Frame and as.UIElements.Main.Frame.TextLabel then
+ts:Create(as.UIElements.Main.Frame.TextLabel, TweenInfo.new(0.18, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+Position = UDim2.new(0, 0, 0, 0),
+}):Play()
+end
 as.Selected=false
 end
 end
-ak.SetThemeTag(ao.Tabs[aq].UIElements.Main,{
+
+local activeTab = ao.Tabs[aq]
+ak.SetThemeTag(activeTab.UIElements.Main,{
 ImageColor3="TabBackgroundActive",
 ImageTransparency="TabBackgroundActiveTransparency",
 },0.15)
-if ao.Tabs[aq].Border then
-ak.SetThemeTag(ao.Tabs[aq].UIElements.Main.Outline,{
+if activeTab.Border then
+ak.SetThemeTag(activeTab.UIElements.Main.Outline,{
 ImageTransparency="TabBorderTransparencyActive",
 },0.15)
 end
-ak.SetThemeTag(ao.Tabs[aq].UIElements.Main.Frame.TextLabel,{
+ak.SetThemeTag(activeTab.UIElements.Main.Frame.TextLabel,{
 TextTransparency="TabTextTransparencyActive",
 },0.15)
-if ao.Tabs[aq].UIElements.Icon and not ao.Tabs[aq].IconColor then
-ak.SetThemeTag(ao.Tabs[aq].UIElements.Icon.ImageLabel,{
+if activeTab.UIElements.Icon and not activeTab.IconColor then
+ak.SetThemeTag(activeTab.UIElements.Icon.ImageLabel,{
 ImageTransparency="TabIconTransparencyActive",
 },0.15)
 end
-ao.Tabs[aq].Selected=true
-
-
+if activeTab.UIElements.Main and activeTab.UIElements.Main.Frame and activeTab.UIElements.Main.Frame.TextLabel then
+ts:Create(activeTab.UIElements.Main.Frame.TextLabel, TweenInfo.new(0.24, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+Position = UDim2.new(0, 4, 0, 0),
+}):Play()
+end
+activeTab.Selected=true
 
 task.spawn(function()
 for ar,as in next,ao.Containers do
-as.AnchorPoint=Vector2.new(0,0.05)
 as.Visible=false
 end
-ao.Containers[aq].Visible=true
-local ar=game:GetService"TweenService"
+local targetCanvas = ao.Containers[aq]
+targetCanvas.Position = UDim2.new(0, 0, 0, 8)
+targetCanvas.Visible = true
 
-local as=TweenInfo.new(0.15,Enum.EasingStyle.Quart,Enum.EasingDirection.Out)
-local at=ar:Create(ao.Containers[aq],as,{
-AnchorPoint=Vector2.new(0,0),
-})
-at:Play()
+local animInfo = TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+ts:Create(targetCanvas, animInfo, {
+Position = UDim2.new(0, 0, 0, 0),
+}):Play()
 end)
 
 ao.OnChangeFunc(aq)
 end
 end
-
 return ao end function a.ab()
 
 local aa={}
@@ -14158,6 +14285,120 @@ function aw.AddPage(self,title,icon)
 return self:Tab({Title=title,Icon=icon})
 end
 
+function aw.Watermark(self, opts)
+opts = opts or {}
+local markTitle = opts.Title or aw.Title or "WindUI"
+local showFPS = opts.FPS ~= false
+local showPing = opts.Ping ~= false
+
+local centerHolder = aw.UIElements.Main and aw.UIElements.Main.Main and aw.UIElements.Main.Main.Topbar and aw.UIElements.Main.Main.Topbar.Center
+if not centerHolder then return end
+centerHolder.Visible = true
+
+local holder = centerHolder:FindFirstChild("Holder") or centerHolder
+
+local badgeFrame = an.NewRoundFrame(8, "Squircle", {
+Size = UDim2.new(0, 0, 0, 26),
+AutomaticSize = "X",
+BackgroundTransparency = 1,
+ThemeTag = { ImageColor3 = "Dialog" },
+ImageColor3 = Color3.fromRGB(18, 16, 15),
+ImageTransparency = 0.5,
+Parent = holder,
+Name = "WatermarkBadge",
+LayoutOrder = -1,
+}, {
+an.NewRoundFrame(7, "SquircleOutline", {
+Size = UDim2.new(1, 0, 1, 0),
+ThemeTag = { ImageColor3 = "Outline" },
+ImageColor3 = Color3.fromRGB(255, 255, 255),
+ImageTransparency = 0.86,
+Name = "Outline",
+}, {
+ao("UIListLayout", {
+FillDirection = "Horizontal",
+VerticalAlignment = "Center",
+Padding = UDim.new(0, 6),
+SortOrder = "LayoutOrder",
+}),
+ao("UIPadding", {
+PaddingLeft = UDim.new(0, 8),
+PaddingRight = UDim.new(0, 8),
+}),
+ao("Frame", {
+Size = UDim2.new(0, 6, 0, 6),
+BackgroundColor3 = Color3.fromRGB(34, 197, 94),
+BorderSizePixel = 0,
+LayoutOrder = 1,
+}, {
+ao("UICorner", { CornerRadius = UDim.new(1, 0) }),
+}),
+ao("TextLabel", {
+Text = markTitle,
+FontFace = Font.new(an.Font, Enum.FontWeight.SemiBold),
+TextSize = 13,
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+ThemeTag = { TextColor3 = "Text" },
+TextTransparency = 0.1,
+LayoutOrder = 2,
+}),
+}),
+})
+
+local statLabel = ao("TextLabel", {
+Text = "",
+FontFace = Font.new(an.Font, Enum.FontWeight.Medium),
+TextSize = 12,
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+ThemeTag = { TextColor3 = "WindowTopbarAuthor" },
+TextTransparency = 0.35,
+LayoutOrder = 3,
+Parent = badgeFrame.Outline,
+})
+
+local lastUpdate = 0
+local fpsHistory = {}
+local conn
+conn = game:GetService("RunService").RenderStepped:Connect(function(dt)
+if aw.Destroyed or not badgeFrame or not badgeFrame.Parent then
+if conn then conn:Disconnect() end
+return
+end
+local now = os.clock()
+table.insert(fpsHistory, dt)
+if #fpsHistory > 25 then table.remove(fpsHistory, 1) end
+if now - lastUpdate >= 0.4 then
+lastUpdate = now
+local totalDt = 0
+for _, v in ipairs(fpsHistory) do totalDt = totalDt + v end
+local fps = math.floor(#fpsHistory / math.max(totalDt, 0.001))
+local ping = math.floor(ak.LocalPlayer and ak.LocalPlayer:GetNetworkPing() and (ak.LocalPlayer:GetNetworkPing() * 1000) or 0)
+local parts = {}
+if showFPS then table.insert(parts, tostring(fps) .. " FPS") end
+if showPing and ping > 0 then table.insert(parts, tostring(ping) .. " ms") end
+statLabel.Text = #parts > 0 and (" • " .. table.concat(parts, " • ")) or ""
+end
+end)
+
+return {
+SetTitle = function(s, t)
+if badgeFrame and badgeFrame.Outline and badgeFrame.Outline:FindFirstChildWhichIsA("TextLabel") then
+badgeFrame.Outline:FindFirstChildWhichIsA("TextLabel").Text = tostring(t)
+end
+end,
+SetVisible = function(s, v)
+if badgeFrame then badgeFrame.Visible = v end
+end,
+Destroy = function(s)
+if conn then conn:Disconnect() end
+if badgeFrame then badgeFrame:Destroy() end
+end,
+}
+end
+aw.AddWatermark = aw.Watermark
+
 local z=an.Drag(
 aw.UIElements.Main,
 {aw.UIElements.Main.Main.Topbar,r.Frame},
@@ -14423,10 +14664,17 @@ aw.Closed=false
 
 aw.UIElements.Main.Size=UDim2.new(aw.Size.X.Scale,aw.Size.X.Offset,0,100)
 
-ap(aw.UIElements.Main,0.8,{
-
+ap(aw.UIElements.Main,0.68,{
 Size=aw.Size,
 },Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+
+if av.WindUI and av.WindUI.UIScaleObj then
+local targetScale = av.WindUI.UIScale or 1
+av.WindUI.UIScaleObj.Scale = targetScale * 0.94
+ap(av.WindUI.UIScaleObj, 0.42, {
+Scale = targetScale,
+}, Enum.EasingStyle.Back, Enum.EasingDirection.Out):Play()
+end
 
 if aw.UIElements.BackgroundGradient then
 ap(aw.UIElements.BackgroundGradient,0.2,{
