@@ -12233,7 +12233,6 @@ end
 end)
 
 return ar
-return ar
 end
 
 function ao.OnChange(ap,aq)
