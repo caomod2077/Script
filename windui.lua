@@ -5818,10 +5818,12 @@ local as=typeof(ah.Color)=="string"
 and GetTextColorForHSB(Color3.fromHex(aa.Colors[ah.Color]))
 or typeof(ah.Color)=="Color3"and GetTextColorForHSB(ah.Color)
 
+local tSize = ar=="Desc" and (ag.Window and ag.Window.ElementConfig and ag.Window.ElementConfig.DescTextSize or 12) or (ag.Window and ag.Window.ElementConfig and ag.Window.ElementConfig.TitleTextSize or 14)
+
 return ab("TextLabel",{
 BackgroundTransparency=1,
 Text=aq or"",
-TextSize=ar=="Desc"and 15 or 17,
+TextSize=tSize,
 TextXAlignment="Left",
 ThemeTag={
 TextColor3=not ah.Color and("Element"..ar)or nil,
@@ -10584,8 +10586,8 @@ Desc=am.Desc,
 Icon=am.Icon,
 IconThemed=am.IconThemed,
 TextXAlignment=am.TextXAlignment or"Left",
-TextSize=am.TextSize or 15,
-DescTextSize=am.DescTextSize or 13,
+TextSize=am.TextSize or 14,
+DescTextSize=am.DescTextSize or 12,
 Box=true,
 BoxBorder=true,
 FontWeight=am.FontWeight or Enum.FontWeight.SemiBold,
@@ -11830,10 +11832,10 @@ Text=ar.Title,
 ThemeTag={
 TextColor3="TabTitle",
 },
-TextTransparency=not ar.Locked and 0.25 or 0.6,
-TextSize=17,
+TextTransparency=not ar.Locked and 0.3 or 0.65,
+TextSize=14,
 Size=UDim2.new(1,0,0,0),
-FontFace=Font.new(ak.Font,Enum.FontWeight.SemiBold),
+FontFace=Font.new(ak.Font,Enum.FontWeight.Medium),
 TextWrapped=true,
 RichText=true,
 AutomaticSize="Y",
@@ -13433,8 +13435,10 @@ aw.SideBarWidth=isMobileDevice and 160 or 175
 aw.TopBarButtonIconSize=aw.TopBarButtonIconSize or(aw.Topbar.ButtonsType=="Mac"and 11 or 16)
 
 aw.ElementConfig={
-UIPadding=(aw.NewElements and 10 or 12),
-UICorner=aw.ElementsRadius or(aw.NewElements and 23 or 14),
+UIPadding=(aw.NewElements and 8 or 9),
+UICorner=aw.ElementsRadius or(aw.NewElements and 23 or 12),
+TitleTextSize=14,
+DescTextSize=12,
 }
 if aw.Topbar=={}then
 aw.Topbar={Height=52,ButtonsType="Default"}
