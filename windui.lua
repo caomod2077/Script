@@ -1840,6 +1840,55 @@ Parent=p,
 })
 end
 
+if g.Progress ~= nil then
+local pVal = math.clamp(tonumber(g.Progress) or 0, 0, 1)
+local pTrack = d("Frame", {
+Size = UDim2.new(1, 0, 0, 6),
+BackgroundColor3 = Color3.fromRGB(40, 36, 34),
+BackgroundTransparency = 0.5,
+BorderSizePixel = 0,
+Parent = p,
+LayoutOrder = 98,
+}, {
+d("UICorner", { CornerRadius = UDim.new(1, 0) }),
+d("Frame", {
+Size = UDim2.new(pVal, 0, 1, 0),
+BackgroundColor3 = Color3.fromRGB(0, 145, 255),
+BorderSizePixel = 0,
+Name = "Fill",
+}, {
+d("UICorner", { CornerRadius = UDim.new(1, 0) }),
+}),
+})
+end
+
+if h.Buttons and #h.Buttons > 0 then
+local btnRow = d("Frame", {
+Size = UDim2.new(1, 0, 0, 30),
+AutomaticSize = "Y",
+BackgroundTransparency = 1,
+Parent = p,
+LayoutOrder = 99,
+}, {
+d("UIListLayout", {
+FillDirection = "Horizontal",
+Padding = UDim.new(0, 6),
+VerticalAlignment = "Center",
+SortOrder = "LayoutOrder",
+}),
+})
+local btnHelper = a.load'm'.New
+for bIdx, bConf in ipairs(h.Buttons) do
+local bObj = btnHelper(bConf.Title or "Button", bConf.Icon, function(...)
+if bConf.Callback then pcall(bConf.Callback, ...) end
+if bConf.CloseOnClick ~= false then h:Close() end
+end, bConf.Variant or "Primary", btnRow, nil, nil, 10)
+bObj.Size = UDim2.new(0, 0, 0, 26)
+bObj.AutomaticSize = "X"
+bObj.LayoutOrder = bIdx
+end
+end
+
 local r=b.NewRoundFrame(f.UICorner,"Squircle",{
 Size=UDim2.new(1,0,0,0),
 Position=UDim2.new(2,0,1,0),
@@ -12523,6 +12572,71 @@ c:Open()
 end
 end
 end
+function ar.Banner(self, bConfig)
+bConfig = bConfig or {}
+local bImg = bConfig.Image or bConfig[1] or ""
+local bHeight = tonumber(bConfig.Height) or 110
+local bTitle = bConfig.Title or ""
+local bDesc = bConfig.Desc or ""
+
+local sf = self.UIElements and self.UIElements.ContainerFrame
+if not sf then return end
+
+local bannerFrame = al("Frame", {
+Size = UDim2.new(1, 0, 0, bHeight),
+BackgroundTransparency = 1,
+LayoutOrder = -9999,
+Parent = sf,
+Name = "TabBanner",
+}, {
+al("UICorner", { CornerRadius = UDim.new(0, 10) }),
+al("ImageLabel", {
+Size = UDim2.new(1, 0, 1, 0),
+BackgroundTransparency = 1,
+Image = bImg,
+ScaleType = "Crop",
+Name = "BannerImage",
+}, {
+al("UICorner", { CornerRadius = UDim.new(0, 10) }),
+al("Frame", {
+Size = UDim2.new(1, 0, 1, 0),
+BackgroundColor3 = Color3.new(0, 0, 0),
+BackgroundTransparency = 0.45,
+Name = "Overlay",
+}, {
+al("UICorner", { CornerRadius = UDim.new(0, 10) }),
+al("UIPadding", {
+PaddingLeft = UDim.new(0, 14),
+PaddingBottom = UDim.new(0, 12),
+}),
+al("UIListLayout", {
+VerticalAlignment = "Bottom",
+Padding = UDim.new(0, 3),
+}),
+bTitle ~= "" and al("TextLabel", {
+Text = bTitle,
+TextSize = 18,
+FontFace = Font.new(ak.Font, Enum.FontWeight.Bold),
+TextColor3 = Color3.new(1, 1, 1),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+LayoutOrder = 1,
+}) or nil,
+bDesc ~= "" and al("TextLabel", {
+Text = bDesc,
+TextSize = 13,
+FontFace = Font.new(ak.Font, Enum.FontWeight.Medium),
+TextColor3 = Color3.fromRGB(220, 220, 220),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+LayoutOrder = 2,
+}) or nil,
+}),
+}),
+})
+return bannerFrame
+end
+
 function ar.AddSearch(self, placeholder)
 placeholder = placeholder or "Search features..."
 local sf = self.UIElements and self.UIElements.ContainerFrame
@@ -14643,6 +14757,134 @@ Duration = duration,
 })
 end
 
+function aw.SetColor(self, colorMap)
+if type(colorMap) ~= "table" then return aw end
+local themeObj = an.Theme or (av.WindUI and av.WindUI.Theme)
+if themeObj then
+for prop, col in pairs(colorMap) do
+local resolved = (typeof(col) == "string" and col:sub(1,1) == "#" and Color3.fromHex(col)) or (typeof(col) == "Color3" and col) or nil
+if resolved then
+themeObj[prop] = resolved
+end
+end
+if an.UpdateTheme then an.UpdateTheme(nil, true) end
+end
+return aw
+end
+
+function aw.SetIconAnimation(self, animType)
+animType = tostring(animType or "Spin")
+local iconImg = aw.UIElements and aw.UIElements.Main and aw.UIElements.Main.Main and aw.UIElements.Main.Main.Topbar and aw.UIElements.Main.Main.Topbar.Left and aw.UIElements.Main.Main.Topbar.Left:FindFirstChildWhichIsA("ImageLabel", true)
+if not iconImg then return end
+local ts = game:GetService("TweenService")
+local conn
+if animType == "Spin" then
+local rot = 0
+conn = game:GetService("RunService").RenderStepped:Connect(function(dt)
+if aw.Destroyed or not iconImg or not iconImg.Parent then
+if conn then conn:Disconnect() end
+return
+end
+rot = (rot + dt * 120) % 360
+iconImg.Rotation = rot
+end)
+elseif animType == "Pulse" then
+local scaleObj = iconImg:FindFirstChildWhichIsA("UIScale") or Instance.new("UIScale", iconImg)
+local growing = true
+task.spawn(function()
+while not aw.Destroyed and iconImg and iconImg.Parent do
+local target = growing and 1.18 or 0.95
+growing = not growing
+local t = ts:Create(scaleObj, TweenInfo.new(0.65, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Scale = target })
+t:Play()
+t.Completed:Wait()
+end
+end)
+elseif animType == "Rainbow" then
+local h = 0
+conn = game:GetService("RunService").RenderStepped:Connect(function(dt)
+if aw.Destroyed or not iconImg or not iconImg.Parent then
+if conn then conn:Disconnect() end
+return
+end
+h = (h + dt * 0.25) % 1
+iconImg.ImageColor3 = Color3.fromHSV(h, 0.8, 1)
+end)
+end
+return aw
+end
+
+function aw.AnimateTitle(self, animType)
+animType = animType or "Gradient"
+local topTitle = aw.UIElements and aw.UIElements.Main and aw.UIElements.Main.Main and aw.UIElements.Main.Main.Topbar and aw.UIElements.Main.Main.Topbar.Left and aw.UIElements.Main.Main.Topbar.Left:FindFirstChild("Title")
+local titleLabel = topTitle and topTitle:FindFirstChildWhichIsA("TextLabel")
+if not titleLabel then return end
+
+if animType == "Gradient" or animType == "Shimmer" then
+local grad = titleLabel:FindFirstChildWhichIsA("UIGradient") or Instance.new("UIGradient", titleLabel)
+grad.Color = ColorSequence.new{
+ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 145, 255)),
+ColorSequenceKeypoint.new(0.5, Color3.fromRGB(245, 158, 11)),
+ColorSequenceKeypoint.new(1, Color3.fromRGB(236, 72, 153)),
+}
+local offset = -1
+game:GetService("RunService").RenderStepped:Connect(function(dt)
+if aw.Destroyed or not grad or not grad.Parent then return end
+offset = offset + dt * 0.75
+if offset > 1 then offset = -1 end
+grad.Offset = Vector2.new(offset, 0)
+end)
+end
+return aw
+end
+
+function aw.SetSidebarBanner(self, bConfig)
+bConfig = bConfig or {}
+local bImg = bConfig.Image or bConfig[1] or ""
+local bHeight = tonumber(bConfig.Height) or 90
+local bTitle = bConfig.Title or ""
+
+local sbHolder = aw.UIElements and aw.UIElements.SideBar and aw.UIElements.SideBar:FindFirstChild("Frame")
+if not sbHolder then return end
+
+local sbBanner = ao("Frame", {
+Size = UDim2.new(1, 0, 0, bHeight),
+BackgroundTransparency = 1,
+LayoutOrder = -99999,
+Parent = sbHolder,
+Name = "SidebarBanner",
+}, {
+ao("UICorner", { CornerRadius = UDim.new(0, 8) }),
+ao("ImageLabel", {
+Size = UDim2.new(1, 0, 1, 0),
+BackgroundTransparency = 1,
+Image = bImg,
+ScaleType = "Crop",
+Name = "Image",
+}, {
+ao("UICorner", { CornerRadius = UDim.new(0, 8) }),
+bTitle ~= "" and ao("Frame", {
+Size = UDim2.new(1, 0, 0, 24),
+Position = UDim2.new(0, 0, 1, -24),
+BackgroundColor3 = Color3.new(0, 0, 0),
+BackgroundTransparency = 0.5,
+}, {
+ao("TextLabel", {
+Text = bTitle,
+TextSize = 12,
+FontFace = Font.new(an.Font, Enum.FontWeight.SemiBold),
+TextColor3 = Color3.new(1, 1, 1),
+BackgroundTransparency = 1,
+Size = UDim2.new(1, -10, 1, 0),
+Position = UDim2.new(0, 6, 0, 0),
+TextXAlignment = "Left",
+}),
+}) or nil,
+}),
+})
+return sbBanner
+end
+
 function aw.AddTabSection(self,title)
 return self:Section({Title=title,Opened=true})
 end
@@ -15440,6 +15682,16 @@ if aw.OpenButton and typeof(aw.OpenButton)=="table"then
 aw:EditOpenButton(aw.OpenButton)
 end
 
+if av.SidebarBanner then
+aw:SetSidebarBanner(av.SidebarBanner)
+end
+if av.IconAnimation then
+aw:SetIconAnimation(av.IconAnimation)
+end
+if av.TitleAnimation then
+aw:AnimateTitle(av.TitleAnimation)
+end
+
 local C=a.load'aa'
 local F=a.load'ab'
 local G=C.Init(aw,av.WindUI,av.WindUI.TooltipGui)
@@ -15713,6 +15965,22 @@ end
 
 
 
+
+local dHolder = ao("Frame", {
+Size = UDim2.new(1, 0, 0, 0),
+AutomaticSize = "Y",
+BackgroundTransparency = 1,
+Parent = O,
+LayoutOrder = 3,
+}, {
+ao("UIListLayout", {
+FillDirection = "Vertical",
+Padding = UDim.new(0, 8),
+}),
+})
+
+local elemLoader = a.load'_'
+elemLoader.Load(N, dHolder, elemLoader.Elements, aw, av.WindUI, nil, elemLoader, 1)
 
 N:Open()
 
