@@ -13146,25 +13146,47 @@ PendingFlags={},
 IsToggleDragging=false,
 }
 
-local isMobileDevice = (af.TouchEnabled and not af.KeyboardEnabled) or (al and al.ViewportSize and math.min(al.ViewportSize.X, al.ViewportSize.Y) < 580)
+local function CheckIsMobile()
+if av.Mobile ~= nil then return av.Mobile end
+if av.IsMobile ~= nil then return av.IsMobile end
+local touch = af and af.TouchEnabled
+local mouse = af and af.MouseEnabled
+local plat
+pcall(function() plat = af:GetPlatform() end)
+if plat == Enum.Platform.IOS or plat == Enum.Platform.Android then
+return true
+end
+if al and al.ViewportSize then
+local minDim = math.min(al.ViewportSize.X, al.ViewportSize.Y)
+if minDim > 0 and minDim <= 540 and touch then
+return true
+end
+end
+if touch and not mouse then
+return true
+end
+return false
+end
+
+local isMobileDevice = CheckIsMobile()
 aw.IsMobile = isMobileDevice
 if isMobileDevice then
 aw.IsPC = false
 end
 
-aw.MinSize = av.MinSize or (isMobileDevice and Vector2.new(460, 300) or Vector2.new(560, 360))
+aw.MinSize = av.MinSize or (isMobileDevice and Vector2.new(440, 280) or Vector2.new(560, 360))
 aw.MaxSize = av.MaxSize or Vector2.new(2560, 1600)
 
-if isMobileDevice and aw.SideBarWidth and aw.SideBarWidth > 170 then
-aw.SideBarWidth = 160
+if isMobileDevice and aw.SideBarWidth and aw.SideBarWidth > 165 then
+aw.SideBarWidth = 155
 end
 
-local defaultW = isMobileDevice and 760 or 860
-local defaultH = isMobileDevice and 480 or 540
+local defaultW = isMobileDevice and 740 or 860
+local defaultH = isMobileDevice and 470 or 540
 
 local ax = aw.Size or UDim2.new(0, defaultW, 0, defaultH)
-if isMobileDevice and ax.X.Offset > 800 and ax.X.Scale == 0 then
-ax = UDim2.new(0, 780, 0, math.min(ax.Y.Offset, 500))
+if isMobileDevice and ax.X.Offset > 780 and ax.X.Scale == 0 then
+ax = UDim2.new(0, 750, 0, math.min(ax.Y.Offset, 480))
 end
 
 aw.Size = UDim2.new(
@@ -14671,34 +14693,33 @@ if not al or not al.ViewportSize then return 1 end
 local view = al.ViewportSize
 if view.X < 50 or view.Y < 50 then return 1 end
 
-local isSmallScreen = aw.IsMobile or (view.Y <= 520) or (view.X <= 950)
-local marginX = isSmallScreen and 32 or 50
-local marginY = isSmallScreen and 24 or 50
+local isPhone = aw.IsMobile or (math.min(view.X, view.Y) <= 520)
 
-local availW = math.max(view.X - marginX, 100)
-local availH = math.max(view.Y - marginY, 100)
+local marginX = isPhone and math.max(math.floor(view.X * 0.08), 24) or 40
+local marginY = isPhone and math.max(math.floor(view.Y * 0.10), 20) or 40
 
-local winW = (aw.Size and aw.Size.X.Offset > 0) and aw.Size.X.Offset or 800
-local winH = (aw.Size and aw.Size.Y.Offset > 0) and aw.Size.Y.Offset or 500
+local availW = math.max(view.X - (marginX * 2), 100)
+local availH = math.max(view.Y - (marginY * 2), 100)
+
+local winW = (aw.Size and aw.Size.X.Offset > 0) and aw.Size.X.Offset or 760
+local winH = (aw.Size and aw.Size.Y.Offset > 0) and aw.Size.Y.Offset or 480
 
 local scaleW = availW / winW
 local scaleH = availH / winH
 local fit = math.min(scaleW, scaleH)
 
-local maxCap = isSmallScreen and 0.72 or 1.0
-local minCap = 0.35
-return math.clamp(fit, minCap, maxCap)
+if isPhone then
+return math.clamp(fit, 0.38, 0.68)
+else
+return math.clamp(fit, 0.45, 1.0)
+end
 end
 
 function aw.SetUIScale(C,F)
 local targetScale = F
 if aw.AutoScale and al and al.ViewportSize and al.ViewportSize.Y > 50 then
 local best = CalculateBestScale()
-if aw.IsMobile or (al.ViewportSize.Y <= 520) then
 targetScale = math.min(targetScale, best)
-else
-targetScale = math.min(targetScale, math.max(best, 1.0))
-end
 end
 targetScale = math.clamp(targetScale, 0.35, 1.25)
 av.WindUI.UIScale=targetScale
