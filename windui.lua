@@ -13146,6 +13146,34 @@ PendingFlags={},
 IsToggleDragging=false,
 }
 
+local isMobileDevice = (af.TouchEnabled and not af.KeyboardEnabled) or (al and al.ViewportSize and math.min(al.ViewportSize.X, al.ViewportSize.Y) < 580)
+aw.IsMobile = isMobileDevice
+if isMobileDevice then
+aw.IsPC = false
+end
+
+aw.MinSize = av.MinSize or (isMobileDevice and Vector2.new(460, 300) or Vector2.new(560, 360))
+aw.MaxSize = av.MaxSize or Vector2.new(2560, 1600)
+
+if isMobileDevice and aw.SideBarWidth and aw.SideBarWidth > 170 then
+aw.SideBarWidth = 160
+end
+
+local defaultW = isMobileDevice and 760 or 860
+local defaultH = isMobileDevice and 480 or 540
+
+local ax = aw.Size or UDim2.new(0, defaultW, 0, defaultH)
+if isMobileDevice and ax.X.Offset > 800 and ax.X.Scale == 0 then
+ax = UDim2.new(0, 780, 0, math.min(ax.Y.Offset, 500))
+end
+
+aw.Size = UDim2.new(
+ax.X.Scale,
+math.clamp(ax.X.Offset, aw.MinSize.X, aw.MaxSize.X),
+ax.Y.Scale,
+math.clamp(ax.Y.Offset, aw.MinSize.Y, aw.MaxSize.Y)
+)
+
 aw.UICorner=aw.Radius
 
 aw.TopBarButtonIconSize=aw.TopBarButtonIconSize or(aw.Topbar.ButtonsType=="Mac"and 11 or 16)
@@ -13154,17 +13182,6 @@ aw.ElementConfig={
 UIPadding=(aw.NewElements and 10 or 13),
 UICorner=aw.ElementsRadius or(aw.NewElements and 23 or 16),
 }
-
-local ax=aw.Size or UDim2.new(0,980,0,680)
-if ax.X.Offset < 750 and ax.X.Scale == 0 then
-ax = UDim2.new(0,980,0,math.max(ax.Y.Offset, 660))
-end
-aw.Size=UDim2.new(
-ax.X.Scale,
-math.clamp(ax.X.Offset,aw.MinSize.X,aw.MaxSize.X),
-ax.Y.Scale,
-math.clamp(ax.Y.Offset,aw.MinSize.Y,aw.MaxSize.Y)
-)
 
 if aw.Topbar=={}then
 aw.Topbar={Height=52,ButtonsType="Default"}
@@ -14649,9 +14666,45 @@ function aw.GetUIScale(C,F)
 return av.WindUI.UIScale
 end
 
+local function CalculateBestScale()
+if not al or not al.ViewportSize then return 1 end
+local view = al.ViewportSize
+if view.X < 50 or view.Y < 50 then return 1 end
+
+local isSmallScreen = aw.IsMobile or (view.Y <= 520) or (view.X <= 950)
+local marginX = isSmallScreen and 32 or 50
+local marginY = isSmallScreen and 24 or 50
+
+local availW = math.max(view.X - marginX, 100)
+local availH = math.max(view.Y - marginY, 100)
+
+local winW = (aw.Size and aw.Size.X.Offset > 0) and aw.Size.X.Offset or 800
+local winH = (aw.Size and aw.Size.Y.Offset > 0) and aw.Size.Y.Offset or 500
+
+local scaleW = availW / winW
+local scaleH = availH / winH
+local fit = math.min(scaleW, scaleH)
+
+local maxCap = isSmallScreen and 0.72 or 1.0
+local minCap = 0.35
+return math.clamp(fit, minCap, maxCap)
+end
+
 function aw.SetUIScale(C,F)
-av.WindUI.UIScale=F
-ap(av.WindUI.UIScaleObj,0.2,{Scale=F},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+local targetScale = F
+if aw.AutoScale and al and al.ViewportSize and al.ViewportSize.Y > 50 then
+local best = CalculateBestScale()
+if aw.IsMobile or (al.ViewportSize.Y <= 520) then
+targetScale = math.min(targetScale, best)
+else
+targetScale = math.min(targetScale, math.max(best, 1.0))
+end
+end
+targetScale = math.clamp(targetScale, 0.35, 1.25)
+av.WindUI.UIScale=targetScale
+if av.WindUI.UIScaleObj then
+ap(av.WindUI.UIScaleObj,0.2,{Scale=targetScale},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+end
 return aw
 end
 
@@ -14670,32 +14723,21 @@ function aw.SetCurrentConfig(C,F)
 aw.CurrentConfig=F
 end
 
-do
-local C=40
-local F=al.ViewportSize
-local G=Vector2.new(aw.Size.X.Offset,aw.Size.Y.Offset)
-
-if not aw.IsFullscreen and aw.AutoScale then
-local H=F.X-(C*2)
-local J=F.Y-(C*2)
-
-local L=H/G.X
-local M=J/G.Y
-
-local N=math.min(L,M)
-
-local O=0.3
-local P=1.0
-
-local Q=math.clamp(N,O,P)
-
-local R=aw:GetUIScale()or 1
-local S=0.05
-
-if math.abs(Q-R)>S then
-aw:SetUIScale(Q)
+local function ApplyAutoScale()
+if aw.Destroyed or not aw.AutoScale or aw.IsFullscreen then return end
+local best = CalculateBestScale()
+local cur = aw:GetUIScale() or 1
+if math.abs(cur - best) > 0.02 then
+aw:SetUIScale(best)
 end
 end
+
+ApplyAutoScale()
+
+if al then
+an.AddSignal(al:GetPropertyChangedSignal"ViewportSize", function()
+ApplyAutoScale()
+end)
 end
 
 if aw.OpenButtonMain and aw.OpenButtonMain.Button then
