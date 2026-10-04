@@ -6135,23 +6135,6 @@ PaddingBottom=UDim.new(0,ah.UIPadding),
 ah.UIElements.Main=d
 ah.UIElements.Locked=av
 
-local elemScale = ab("UIScale", {
-Scale = 1,
-Parent = d,
-})
-
-aa.AddSignal(d.MouseButton1Down, function()
-if not ah.Locked then
-ad(elemScale, 0.1, { Scale = 0.982 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-end
-end)
-aa.AddSignal(d.MouseButton1Up, function()
-ad(elemScale, 0.22, { Scale = 1 }, Enum.EasingStyle.Back, Enum.EasingDirection.Out):Play()
-end)
-aa.AddSignal(d.MouseLeave, function()
-ad(elemScale, 0.18, { Scale = 1 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-end)
-
 if ah.Hover then
 aa.AddSignal(d.MouseEnter,function()
 if am then
@@ -10601,7 +10584,7 @@ Desc=am.Desc,
 Icon=am.Icon,
 IconThemed=am.IconThemed,
 TextXAlignment=am.TextXAlignment or"Left",
-TextSize=am.TextSize or 16,
+TextSize=am.TextSize or 15,
 DescTextSize=am.DescTextSize or 13,
 Box=true,
 BoxBorder=true,
@@ -10614,8 +10597,8 @@ Badge=am.Badge,
 BadgeColor=am.BadgeColor,
 UIElements={},
 
-HeaderSize=40,
-IconSize=18,
+HeaderSize=38,
+IconSize=17,
 Padding=10,
 
 Elements={},
@@ -10681,8 +10664,8 @@ LayoutOrder=2,
 })
 
 local leftHeaderFrame=af("Frame",{
-Size=UDim2.new(1,-36,1,0),
-Position=UDim2.new(0,12,0,0),
+Size=UDim2.new(1,-42,1,0),
+Position=UDim2.new(0,10,0,0),
 AnchorPoint=Vector2.new(0,0),
 BackgroundTransparency=1,
 },{
@@ -10690,7 +10673,7 @@ af("UIListLayout",{
 FillDirection="Horizontal",
 VerticalAlignment="Center",
 HorizontalAlignment="Left",
-Padding=UDim.new(0,8),
+Padding=UDim.new(0,7),
 SortOrder="LayoutOrder",
 }),
 ao,
@@ -10732,14 +10715,67 @@ if an.Badge then
 an:AddBadge(an.Badge, an.BadgeColor)
 end
 
+local headerButtonsHolder=af("Frame",{
+Size=UDim2.new(0,0,1,0),
+AutomaticSize="X",
+BackgroundTransparency=1,
+LayoutOrder=1,
+},{
+af("UIListLayout",{
+FillDirection="Horizontal",
+VerticalAlignment="Center",
+Padding=UDim.new(0,4),
+SortOrder="LayoutOrder",
+}),
+})
+
 local rightChevronFrame=af("Frame",{
-Size=UDim2.new(0,24,1,0),
+Size=UDim2.new(0,0,1,0),
+AutomaticSize="X",
 Position=UDim2.new(1,-8,0.5,0),
 AnchorPoint=Vector2.new(1,0.5),
 BackgroundTransparency=1,
 },{
+af("UIListLayout",{
+FillDirection="Horizontal",
+VerticalAlignment="Center",
+Padding=UDim.new(0,6),
+SortOrder="LayoutOrder",
+}),
+headerButtonsHolder,
+af("Frame",{
+Size=UDim2.new(0,22,0,22),
+BackgroundTransparency=1,
+LayoutOrder=2,
+},{
 ap,
+}),
 })
+
+function an.AddHeaderButton(self, icon, callback)
+local hb = af("ImageButton", {
+Size = UDim2.new(0, 22, 0, 22),
+BackgroundTransparency = 1,
+Image = aa.Icon(icon)[1],
+ImageRectSize = aa.Icon(icon)[2].ImageRectSize,
+ImageRectOffset = aa.Icon(icon)[2].ImageRectPosition,
+ThemeTag = { ImageColor3 = "Icon" },
+ImageTransparency = 0.35,
+Parent = headerButtonsHolder,
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 4) }),
+})
+aa.AddSignal(hb.MouseEnter, function()
+ai(hb, 0.12, { ImageTransparency = 0 }):Play()
+end)
+aa.AddSignal(hb.MouseLeave, function()
+ai(hb, 0.15, { ImageTransparency = 0.35 }):Play()
+end)
+aa.AddSignal(hb.MouseButton1Click, function()
+if callback then pcall(callback) end
+end)
+return hb
+end
 
 local topButton=af("TextButton",{
 Size=UDim2.new(1,0,0,an.HeaderSize),
@@ -10756,7 +10792,7 @@ local dividerLine=af("Frame",{
 Size=UDim2.new(1,0,0,1),
 ThemeTag={BackgroundColor3="Outline"},
 BackgroundColor3=Color3.fromRGB(255,255,255),
-BackgroundTransparency=0.88,
+BackgroundTransparency=0.9,
 BorderSizePixel=0,
 Name="Divider",
 LayoutOrder=2,
@@ -10771,20 +10807,20 @@ Visible=an.Opened,
 LayoutOrder=3,
 },{
 af("UIPadding",{
-PaddingLeft=UDim.new(0,10),
-PaddingRight=UDim.new(0,10),
-PaddingBottom=UDim.new(0,10),
-PaddingTop=UDim.new(0,8),
+PaddingLeft=UDim.new(0,9),
+PaddingRight=UDim.new(0,9),
+PaddingBottom=UDim.new(0,9),
+PaddingTop=UDim.new(0,7),
 }),
 af("UIListLayout",{
 FillDirection="Vertical",
-Padding=UDim.new(0,6),
+Padding=UDim.new(0,5),
 VerticalAlignment="Top",
 SortOrder="LayoutOrder",
 }),
 })
 
--- Ultra-subtle frosted glass card background matching image-1791095014617.png
+-- Ultra-subtle frosted glass card background matching reference
 local at=aa.NewRoundFrame(10,"Squircle",{
 Size=UDim2.new(1,0,0,0),
 BackgroundTransparency=1,
@@ -10821,39 +10857,25 @@ contentFrame,
 }),
 })
 
-local cardScale = af("UIScale", {
-Scale = 1,
-Parent = at,
-})
-
 local outlineFrame = at:FindFirstChild("Outline")
 
--- Interactive Card Hover Glow
+-- Pure hover glow without layout shifting or scale distortion
 aa.AddSignal(topButton.MouseEnter, function()
-ai(topButton, 0.16, { BackgroundTransparency = 0.94 }):Play()
+ai(topButton, 0.12, { BackgroundTransparency = 0.95 }):Play()
 if outlineFrame then
-ai(outlineFrame, 0.22, { ImageTransparency = 0.65 }):Play()
+ai(outlineFrame, 0.18, { ImageTransparency = 0.65 }):Play()
 end
-ai(dividerLine, 0.2, { BackgroundTransparency = 0.72 }):Play()
-ai(titleLabel, 0.16, { TextTransparency = 0 }):Play()
+ai(dividerLine, 0.18, { BackgroundTransparency = 0.75 }):Play()
+ai(titleLabel, 0.15, { TextTransparency = 0 }):Play()
 end)
 
 aa.AddSignal(topButton.MouseLeave, function()
-ai(topButton, 0.2, { BackgroundTransparency = 1 }):Play()
+ai(topButton, 0.18, { BackgroundTransparency = 1 }):Play()
 if outlineFrame then
-ai(outlineFrame, 0.25, { ImageTransparency = 0.85 }):Play()
+ai(outlineFrame, 0.22, { ImageTransparency = 0.85 }):Play()
 end
-ai(dividerLine, 0.25, { BackgroundTransparency = 0.88 }):Play()
-ai(titleLabel, 0.2, { TextTransparency = an.TextTransparency }):Play()
-end)
-
--- Tactile click compression
-aa.AddSignal(topButton.MouseButton1Down, function()
-ai(cardScale, 0.1, { Scale = 0.99 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-end)
-
-aa.AddSignal(topButton.MouseButton1Up, function()
-ai(cardScale, 0.22, { Scale = 1 }, Enum.EasingStyle.Back, Enum.EasingDirection.Out):Play()
+ai(dividerLine, 0.22, { BackgroundTransparency = 0.9 }):Play()
+ai(titleLabel, 0.18, { TextTransparency = an.TextTransparency }):Play()
 end)
 
 an.ElementFrame=at
@@ -10888,15 +10910,15 @@ end
 function an.Open(av)
 an.Opened=true
 contentFrame.Visible=true
-ai(ap, 0.32, { Rotation = 180 }, Enum.EasingStyle.Back, Enum.EasingDirection.Out):Play()
-ai(dividerLine, 0.25, { BackgroundTransparency = 0.88 }):Play()
+ai(ap, 0.2, { Rotation = 180 }, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+ai(dividerLine, 0.18, { BackgroundTransparency = 0.9 }):Play()
 end
 
 function an.Close(av)
 an.Opened=false
 contentFrame.Visible=false
-ai(ap, 0.25, { Rotation = 0 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-ai(dividerLine, 0.25, { BackgroundTransparency = 1 }):Play()
+ai(ap, 0.18, { Rotation = 0 }, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
+ai(dividerLine, 0.18, { BackgroundTransparency = 1 }):Play()
 end
 
 function an.Flash(self, color)
@@ -10904,7 +10926,7 @@ if outlineFrame then
 local origColor = outlineFrame.ImageColor3
 local flashCol = color or Color3.fromRGB(0, 145, 255)
 outlineFrame.ImageColor3 = flashCol
-ai(outlineFrame, 0.45, { ImageColor3 = origColor, ImageTransparency = 0.85 }, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+ai(outlineFrame, 0.35, { ImageColor3 = origColor, ImageTransparency = 0.85 }, Enum.EasingStyle.Quad, Enum.EasingDirection.Out):Play()
 end
 end
 
@@ -12319,6 +12341,105 @@ c:Open()
 end
 end
 end
+function ar.AddSearch(self, placeholder)
+placeholder = placeholder or "Search features..."
+local sf = self.UIElements and self.UIElements.ContainerFrame
+if not sf then return end
+
+local searchHolder = al("Frame", {
+Size = UDim2.new(1, 0, 0, 32),
+BackgroundTransparency = 1,
+LayoutOrder = -999,
+Parent = sf,
+Name = "TabSearchBar",
+})
+
+local searchBg = ak.NewRoundFrame(8, "Squircle", {
+Size = UDim2.new(1, 0, 1, 0),
+ThemeTag = { ImageColor3 = "Dialog" },
+ImageColor3 = Color3.fromRGB(24, 20, 18),
+ImageTransparency = 0.5,
+Parent = searchHolder,
+}, {
+ak.NewRoundFrame(7, "SquircleOutline", {
+Size = UDim2.new(1, 0, 1, 0),
+ThemeTag = { ImageColor3 = "Outline" },
+ImageColor3 = Color3.fromRGB(255, 255, 255),
+ImageTransparency = 0.85,
+Name = "Outline",
+}, {
+al("UIListLayout", {
+FillDirection = "Horizontal",
+VerticalAlignment = "Center",
+Padding = UDim.new(0, 6),
+SortOrder = "LayoutOrder",
+}),
+al("UIPadding", {
+PaddingLeft = UDim.new(0, 8),
+PaddingRight = UDim.new(0, 8),
+}),
+al("ImageLabel", {
+Size = UDim2.new(0, 14, 0, 14),
+BackgroundTransparency = 1,
+Image = ak.Icon"search"[1],
+ImageRectSize = ak.Icon"search"[2].ImageRectSize,
+ImageRectOffset = ak.Icon"search"[2].ImageRectPosition,
+ThemeTag = { ImageColor3 = "Icon" },
+ImageTransparency = 0.35,
+LayoutOrder = 1,
+}),
+al("TextBox", {
+Size = UDim2.new(1, -26, 1, 0),
+BackgroundTransparency = 1,
+PlaceholderText = placeholder,
+Text = "",
+TextXAlignment = "Left",
+FontFace = Font.new(ak.Font, Enum.FontWeight.Regular),
+TextSize = 13,
+ClearTextOnFocus = false,
+LayoutOrder = 2,
+ThemeTag = {
+PlaceholderColor3 = "Placeholder",
+TextColor3 = "Text",
+},
+Name = "Input",
+}),
+}),
+})
+
+local tb = searchBg.Outline.Input
+tb:GetPropertyChangedSignal("Text"):Connect(function()
+local query = string.lower(tb.Text):match("^%s*(.-)%s*$")
+local function checkCol(col)
+if not col then return end
+for _, card in ipairs(col:GetChildren()) do
+if card:IsA("GuiObject") and not card:IsA("UIListLayout") then
+if query == "" then
+card.Visible = true
+else
+local outline = card:FindFirstChild("Outline")
+local top = outline and outline:FindFirstChild("Top")
+local title = ""
+if top then
+for _, d in ipairs(top:GetDescendants()) do
+if d:IsA("TextLabel") and d.Text ~= "" then
+title = string.lower(d.Text)
+break
+end
+end
+end
+card.Visible = (title:find(query, 1, true) ~= nil)
+end
+end
+end
+end
+checkCol(self.LeftColumn)
+checkCol(self.RightColumn)
+end)
+
+return searchHolder
+end
+
 
 local bEmpty=al("Frame",{
 BackgroundTransparency=1,
@@ -12374,30 +12495,23 @@ function ao.SelectTab(ap,aq)
 if not ao.Tabs[aq].Locked then
 ao.SelectedTab=aq
 
-local ts = game:GetService"TweenService"
-
 for ar,as in next,ao.Tabs do
 if not as.Locked then
 ak.SetThemeTag(as.UIElements.Main,{
 ImageTransparency="TabBorderTransparency",
-},0.15)
+},0.12)
 if as.Border then
 ak.SetThemeTag(as.UIElements.Main.Outline,{
 ImageTransparency="TabBorderTransparency",
-},0.15)
+},0.12)
 end
 ak.SetThemeTag(as.UIElements.Main.Frame.TextLabel,{
 TextTransparency="TabTextTransparency",
-},0.15)
+},0.12)
 if as.UIElements.Icon and not as.IconColor then
 ak.SetThemeTag(as.UIElements.Icon.ImageLabel,{
 ImageTransparency="TabIconTransparency",
-},0.15)
-end
-if as.UIElements.Main and as.UIElements.Main.Frame and as.UIElements.Main.Frame.TextLabel then
-ts:Create(as.UIElements.Main.Frame.TextLabel, TweenInfo.new(0.18, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-Position = UDim2.new(0, 0, 0, 0),
-}):Play()
+},0.12)
 end
 as.Selected=false
 end
@@ -12407,40 +12521,32 @@ local activeTab = ao.Tabs[aq]
 ak.SetThemeTag(activeTab.UIElements.Main,{
 ImageColor3="TabBackgroundActive",
 ImageTransparency="TabBackgroundActiveTransparency",
-},0.15)
+},0.12)
 if activeTab.Border then
 ak.SetThemeTag(activeTab.UIElements.Main.Outline,{
 ImageTransparency="TabBorderTransparencyActive",
-},0.15)
+},0.12)
 end
 ak.SetThemeTag(activeTab.UIElements.Main.Frame.TextLabel,{
 TextTransparency="TabTextTransparencyActive",
-},0.15)
+},0.12)
 if activeTab.UIElements.Icon and not activeTab.IconColor then
 ak.SetThemeTag(activeTab.UIElements.Icon.ImageLabel,{
 ImageTransparency="TabIconTransparencyActive",
-},0.15)
-end
-if activeTab.UIElements.Main and activeTab.UIElements.Main.Frame and activeTab.UIElements.Main.Frame.TextLabel then
-ts:Create(activeTab.UIElements.Main.Frame.TextLabel, TweenInfo.new(0.24, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-Position = UDim2.new(0, 4, 0, 0),
-}):Play()
+},0.12)
 end
 activeTab.Selected=true
 
-task.spawn(function()
 for ar,as in next,ao.Containers do
 as.Visible=false
 end
 local targetCanvas = ao.Containers[aq]
-targetCanvas.Position = UDim2.new(0, 0, 0, 8)
+targetCanvas.Position = UDim2.new(0, 0, 0, 0)
 targetCanvas.Visible = true
 
-local animInfo = TweenInfo.new(0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-ts:Create(targetCanvas, animInfo, {
-Position = UDim2.new(0, 0, 0, 0),
-}):Play()
-end)
+if Window and Window.PlaySound then
+Window:PlaySound("tab")
+end
 
 ao.OnChangeFunc(aq)
 end
@@ -13289,10 +13395,10 @@ pcall(function() plat = af:GetPlatform() end)
 if plat == Enum.Platform.IOS or plat == Enum.Platform.Android then
 return true
 end
-if touch then return true end
+if touch and not (af and af.MouseEnabled) then return true end
 if al and al.ViewportSize then
 local minDim = math.min(al.ViewportSize.X, al.ViewportSize.Y)
-if minDim > 0 and minDim <= 540 then
+if minDim > 0 and minDim <= 500 then
 return true
 end
 end
@@ -13305,11 +13411,12 @@ if isMobileDevice then
 aw.IsPC = false
 end
 
-aw.MinSize = av.MinSize or Vector2.new(500, 320)
+aw.MinSize = av.MinSize or Vector2.new(460, 320)
 aw.MaxSize = av.MaxSize or Vector2.new(2560, 1600)
 
-local defaultW = isMobileDevice and 880 or 920
-local defaultH = isMobileDevice and 580 or 600
+-- Sleek, balanced PC dimensions (720x480) vs mobile (780x500)
+local defaultW = isMobileDevice and 780 or 720
+local defaultH = isMobileDevice and 500 or 470
 
 local ax = aw.Size or UDim2.new(0, defaultW, 0, defaultH)
 
@@ -13321,12 +13428,13 @@ math.clamp(ax.Y.Offset, aw.MinSize.Y, aw.MaxSize.Y)
 )
 
 aw.UICorner=aw.Radius
+aw.SideBarWidth=isMobileDevice and 160 or 175
 
 aw.TopBarButtonIconSize=aw.TopBarButtonIconSize or(aw.Topbar.ButtonsType=="Mac"and 11 or 16)
 
 aw.ElementConfig={
-UIPadding=(aw.NewElements and 10 or 13),
-UICorner=aw.ElementsRadius or(aw.NewElements and 23 or 16),
+UIPadding=(aw.NewElements and 10 or 12),
+UICorner=aw.ElementsRadius or(aw.NewElements and 23 or 14),
 }
 if aw.Topbar=={}then
 aw.Topbar={Height=52,ButtonsType="Default"}
@@ -14274,6 +14382,77 @@ end
 
 
 
+aw.SidebarCollapsed = false
+function aw.ToggleSidebar(self, forceState)
+if forceState ~= nil then
+aw.SidebarCollapsed = forceState
+else
+aw.SidebarCollapsed = not aw.SidebarCollapsed
+end
+local collapsed = aw.SidebarCollapsed
+local sideW = collapsed and 52 or (aw.IsMobile and 160 or 175)
+local ts = game:GetService("TweenService")
+local ti = TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+ts:Create(aw.UIElements.SideBarContainer, ti, {
+Size = UDim2.new(0, sideW, 1, -aw.Topbar.Height)
+}):Play()
+
+ts:Create(aw.UIElements.MainBar, ti, {
+Size = UDim2.new(1, -sideW, 1, -aw.Topbar.Height)
+}):Play()
+
+if aw.TabModule and aw.TabModule.Tabs then
+for _, tab in pairs(aw.TabModule.Tabs) do
+local lbl = tab.UIElements and tab.UIElements.Main and tab.UIElements.Main.Frame and tab.UIElements.Main.Frame.TextLabel
+if lbl then
+ts:Create(lbl, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+TextTransparency = collapsed and 1 or (tab.Selected and 0 or 0.25)
+}):Play()
+end
+end
+end
+return aw.SidebarCollapsed
+end
+
+aw.SoundsEnabled = false
+function aw.EnableSounds(self, enabled)
+aw.SoundsEnabled = (enabled ~= false)
+return aw
+end
+
+function aw.PlaySound(self, soundType)
+if not aw.SoundsEnabled then return end
+task.spawn(function()
+pcall(function()
+local id = (soundType == "toggle" and "rbxassetid://4590662766")
+or (soundType == "tab" and "rbxassetid://6895079853")
+or "rbxassetid://6895079853"
+local s = Instance.new("Sound")
+s.SoundId = id
+s.Volume = 0.25
+s.Parent = game:GetService("SoundService")
+s:Play()
+game:GetService("Debris"):AddItem(s, 1.5)
+end)
+end)
+end
+
+function aw.Toast(self, opts)
+opts = opts or {}
+local title = opts.Title or "Notice"
+local content = opts.Content or opts.Message or ""
+local duration = opts.Duration or 3.5
+local icon = opts.Icon or "bell"
+
+return aw.WindUI:Notify({
+Title = title,
+Content = content,
+Icon = icon,
+Duration = duration,
+})
+end
+
 function aw.AddTabSection(self,title)
 return self:Section({Title=title,Opened=true})
 end
@@ -14937,21 +15116,25 @@ if not al or not al.ViewportSize then return 1 end
 local view = al.ViewportSize
 if view.X < 50 or view.Y < 50 then return 1 end
 
-local winW = (aw.Size and aw.Size.X.Offset > 0) and aw.Size.X.Offset or 880
-local winH = (aw.Size and aw.Size.Y.Offset > 0) and aw.Size.Y.Offset or 580
+local isPhone = aw.IsMobile or (math.min(view.X, view.Y) <= 500)
 
--- Target height on screen: ~84% of viewport height (matches image-1791098796321.png)
-local targetH = view.Y * 0.85
-local targetW = view.X * 0.76
+local winW = (aw.Size and aw.Size.X.Offset > 0) and aw.Size.X.Offset or 720
+local winH = (aw.Size and aw.Size.Y.Offset > 0) and aw.Size.Y.Offset or 470
 
-local scaleH = targetH / winH
-local scaleW = targetW / winW
-
-local fit = math.min(scaleH, scaleW)
-if aw.IsMobile or (math.min(view.X, view.Y) <= 540) then
-return math.clamp(fit, 0.55, 0.90)
+if isPhone then
+local targetH = view.Y * 0.84
+local targetW = view.X * 0.80
+local fit = math.min(targetH / winH, targetW / winW)
+return math.clamp(fit, 0.45, 0.78)
 else
-return math.clamp(fit, 0.60, 1.05)
+-- On PC: Keep standard 1.0 scale! Only downscale if screen is tiny
+local availW = math.max(view.X - 50, 100)
+local availH = math.max(view.Y - 50, 100)
+if availW < winW or availH < winH then
+local fit = math.min(availW / winW, availH / winH)
+return math.clamp(fit, 0.50, 1.0)
+end
+return 1.0
 end
 end
 
@@ -14961,10 +15144,10 @@ if aw.AutoScale and al and al.ViewportSize and al.ViewportSize.Y > 50 then
 local best = CalculateBestScale()
 targetScale = math.min(targetScale, best)
 end
-targetScale = math.clamp(targetScale, 0.45, 1.25)
+targetScale = math.clamp(targetScale, 0.40, 1.25)
 av.WindUI.UIScale=targetScale
 if av.WindUI.UIScaleObj then
-ap(av.WindUI.UIScaleObj,0.2,{Scale=targetScale},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
+ap(av.WindUI.UIScaleObj,0.18,{Scale=targetScale},Enum.EasingStyle.Quad,Enum.EasingDirection.Out):Play()
 end
 return aw
 end
