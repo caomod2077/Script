@@ -5962,20 +5962,15 @@ af:New(at, holder)
 end
 end
 
+local th = ah.UIElements.Container.TitleFrame.TitleFrame:FindFirstChild("TagsHolder")
+if th and th:FindFirstChild("UIListLayout") then
 aa.AddSignal(
-ah.UIElements.Container.TitleFrame.TitleFrame.ScrollingFrame.UIListLayout:GetPropertyChangedSignal
-"AbsoluteContentSize"
-,
+th.UIListLayout:GetPropertyChangedSignal"AbsoluteContentSize",
 function()
-ah.UIElements.Container.TitleFrame.TitleFrame.ScrollingFrame.Size=UDim2.new(
-1,
-0,
-0,
-ah.UIElements.Container.TitleFrame.TitleFrame.ScrollingFrame.UIListLayout.AbsoluteContentSize.Y
-/ag.ParentConfig.UIScale
-)
+th.Size=UDim2.new(1,0,0,th.UIListLayout.AbsoluteContentSize.Y)
 end
 )
+end
 
 
 
