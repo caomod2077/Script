@@ -5762,13 +5762,16 @@ UICorner=ag.Window.ElementConfig.UICorner,
 Size=ag.Size or"Default",
 Tags=(function()
 local t = {}
-if ag.Tags and typeof(ag.Tags) == "table" then
-for _, tag in ipairs(ag.Tags) do table.insert(t, tag) end
+local srcTags = (ag and ag.Tags) or (ag and ag.ParentConfig and ag.ParentConfig.Tags)
+if srcTags and typeof(srcTags) == "table" then
+for _, tag in ipairs(srcTags) do table.insert(t, tag) end
 end
-if ag.Tag and typeof(ag.Tag) == "string" then
-table.insert(t, { Title = ag.Tag, Color = ag.TagColor or Color3.fromRGB(0, 145, 255) })
-elseif ag.Tag and typeof(ag.Tag) == "table" then
-table.insert(t, ag.Tag)
+local singleTag = (ag and ag.Tag) or (ag and ag.ParentConfig and ag.ParentConfig.Tag)
+local singleColor = (ag and ag.TagColor) or (ag and ag.ParentConfig and ag.ParentConfig.TagColor) or Color3.fromRGB(0, 145, 255)
+if singleTag and typeof(singleTag) == "string" then
+table.insert(t, { Title = singleTag, Color = singleColor })
+elseif singleTag and typeof(singleTag) == "table" then
+table.insert(t, singleTag)
 end
 return t
 end)(),
@@ -5921,21 +5924,19 @@ FillDirection="Vertical",
 VerticalAlignment="Center",
 HorizontalAlignment="Left",
 }),
-ab("ScrollingFrame",{
+ab("Frame",{
 Size=UDim2.new(1,0,0,0),
-AutomaticSize="Y",
+AutomaticSize="XY",
 LayoutOrder=-99,
 BackgroundTransparency=1,
-ScrollingDirection="X",
-CanvasSize=UDim2.new(0,0,0,0),
-ScrollBarThickness=0,
 Visible=false,
+Name="TagsHolder",
 },{
 ab("UIListLayout",{
 FillDirection="Horizontal",
 VerticalAlignment="Center",
 HorizontalAlignment="Left",
-Padding=UDim.new(0,ag.Window.UIPadding/2),
+Padding=UDim.new(0,6),
 }),
 }),
 ab("Frame",{
@@ -5951,11 +5952,14 @@ ar,
 })
 
 for as,at in next,ah.Tags or{}do
-if not ah.UIElements.Container.TitleFrame.TitleFrame.ScrollingFrame.Visible then
-ah.UIElements.Container.TitleFrame.TitleFrame.ScrollingFrame.Visible=true
-ah.UIElements.Container.TitleFrame.TitleFrame.Space.Visible=true
+local holder = ah.UIElements.Container.TitleFrame.TitleFrame:FindFirstChild("TagsHolder") or ah.UIElements.Container.TitleFrame.TitleFrame:FindFirstChild("ScrollingFrame")
+if holder then
+holder.Visible = true
+if ah.UIElements.Container.TitleFrame.TitleFrame:FindFirstChild("Space") then
+ah.UIElements.Container.TitleFrame.TitleFrame.Space.Visible = true
 end
-af:New(at,ah.UIElements.Container.TitleFrame.TitleFrame.ScrollingFrame)
+af:New(at, holder)
+end
 end
 
 aa.AddSignal(
