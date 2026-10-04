@@ -13158,7 +13158,7 @@ return true
 end
 if al and al.ViewportSize then
 local minDim = math.min(al.ViewportSize.X, al.ViewportSize.Y)
-if minDim > 0 and minDim <= 540 and touch then
+if minDim > 0 and minDim <= 520 then
 return true
 end
 end
