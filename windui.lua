@@ -5445,14 +5445,16 @@ or ColorSequence.new(Color3.fromHex"40c9ff",Color3.fromHex"e81cff"),
 
 
 
-if ar.Enabled==false then
-af.IsOpenButtonEnabled=false
+if ar.Enabled == false then
+af.IsOpenButtonEnabled = false
+else
+af.IsOpenButtonEnabled = true
+af.IsPC = false
+ar.OnlyMobile = false
 end
 
-if ar.OnlyMobile~=false then
-ar.OnlyMobile=true
-else
-af.IsPC=false
+if ar.OnlyMobile == false then
+af.IsPC = false
 end
 
 
@@ -14582,7 +14584,7 @@ end
 
 aw.UIElements.Main.Visible=false
 
-if aw.OpenButtonMain and not aw.Destroyed and not aw.IsPC and aw.IsOpenButtonEnabled then
+if aw.OpenButtonMain and not aw.Destroyed and aw.IsOpenButtonEnabled then
 aw.OpenButtonMain:Visible(true)
 end
 end)
@@ -14772,7 +14774,20 @@ aw:Open()
 end)
 
 function aw.EditOpenButton(C,F)
+if F and type(F)=="table" and F.Enabled~=false then
+aw.IsOpenButtonEnabled=true
+aw.IsPC=false
+end
 return aw.OpenButtonMain:Edit(F)
+end
+
+function aw.ForceOpenButton(C,F)
+aw.IsOpenButtonEnabled=(F~=false)
+aw.IsPC=false
+if aw.OpenButtonMain then
+aw.OpenButtonMain:Visible(F~=false)
+end
+return aw
 end
 
 if aw.OpenButton and typeof(aw.OpenButton)=="table"then
