@@ -5950,7 +5950,7 @@ ar,
 }),
 })
 
-for as,at in next,ag.Tags or{}do
+for as,at in next,ah.Tags or{}do
 if not ah.UIElements.Container.TitleFrame.TitleFrame.ScrollingFrame.Visible then
 ah.UIElements.Container.TitleFrame.TitleFrame.ScrollingFrame.Visible=true
 ah.UIElements.Container.TitleFrame.TitleFrame.Space.Visible=true
@@ -11558,23 +11558,21 @@ return al end function a._()
 
 local holdButtonModule = {
 New = function(self, cfg)
-local btnTitle = cfg.Title or "Hold Button"
-local btnDesc = cfg.Desc or nil
+local btnModule = a.load'E'
+local cb = cfg.Callback or function() end
 local holdDuration = tonumber(cfg.HoldTime) or 1.5
-local callback = cfg.Callback or function() end
-local btnIcon = cfg.Icon or "hand"
+if not cfg.Desc then
+cfg.Desc = "Hold for " .. tostring(holdDuration) .. "s"
+end
+if not cfg.Tag then
+cfg.Tag = "HOLD"
+cfg.TagColor = Color3.fromRGB(249, 115, 22)
+end
 
-local btn = cfg.Tab and cfg.Tab.Button and cfg.Tab:Button({
-Title = btnTitle,
-Desc = btnDesc or ("Hold for " .. tostring(holdDuration) .. "s"),
-Icon = btnIcon,
-Tag = cfg.Tag or "HOLD",
-TagColor = cfg.TagColor or Color3.fromRGB(249, 115, 22),
-Callback = function() end,
-})
+local typeName, btn = btnModule:New(cfg)
 
-if btn and btn.ElementFrame then
-local ef = btn.ElementFrame
+local ef = btn and (btn.ElementFrame or (btn.ButtonFrame and btn.ButtonFrame.UIElements and btn.ButtonFrame.UIElements.Main))
+if ef then
 local fillBar = Instance.new("Frame")
 fillBar.Size = UDim2.new(0, 0, 1, 0)
 fillBar.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
@@ -11587,7 +11585,6 @@ fillCorner.CornerRadius = UDim.new(0, 10)
 fillCorner.Parent = fillBar
 
 local holding = false
-local holdConn
 local ts = game:GetService("TweenService")
 local fillTween
 
@@ -11595,7 +11592,7 @@ ef.InputBegan:Connect(function(input)
 if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 holding = true
 fillBar.Size = UDim2.new(0, 0, 1, 0)
-fillBar.BackgroundTransparency = 0.65
+fillBar.BackgroundTransparency = 0.6
 fillTween = ts:Create(fillBar, TweenInfo.new(holdDuration, Enum.EasingStyle.Linear), {
 Size = UDim2.new(1, 0, 1, 0)
 })
@@ -11603,8 +11600,8 @@ fillTween:Play()
 task.spawn(function()
 task.wait(holdDuration)
 if holding then
-pcall(callback)
-fillBar.BackgroundTransparency = 0.3
+pcall(cb)
+fillBar.BackgroundTransparency = 0.25
 ts:Create(fillBar, TweenInfo.new(0.3, Enum.EasingStyle.Quad), { BackgroundTransparency = 1 }):Play()
 task.wait(0.35)
 fillBar.Size = UDim2.new(0, 0, 1, 0)
@@ -11630,6 +11627,7 @@ end,
 
 local changelogModule = {
 New = function(self, cfg)
+local paraModule = a.load'D'
 local title = cfg.Title or (cfg.Version and ("v" .. tostring(cfg.Version) .. " Changelog") or "Changelog")
 local items = cfg.Items or cfg.Changes or {}
 local descLines = {}
@@ -11646,28 +11644,29 @@ table.insert(descLines, '<font color="#A1A1AA">•</font> ' .. str)
 end
 end
 
-local p = cfg.Tab and cfg.Tab.Paragraph and cfg.Tab:Paragraph({
-Title = title,
-Desc = table.concat(descLines, "\n"),
-Image = cfg.Icon or "newspaper",
-ImageSize = 30,
-})
+cfg.Title = title
+cfg.Desc = table.concat(descLines, "\n")
+cfg.Image = cfg.Icon or "newspaper"
+cfg.ImageSize = 28
+
+local typeName, p = paraModule:New(cfg)
 return "Changelog", p
 end,
 }
 
 local countdownModule = {
 New = function(self, cfg)
+local paraModule = a.load'D'
 local targetTime = cfg.TargetTime or (os.time() + (cfg.Seconds or 3600))
 local title = cfg.Title or "Event Countdown"
 local onEnd = cfg.OnEnd or cfg.Callback
 
-local p = cfg.Tab and cfg.Tab.Paragraph and cfg.Tab:Paragraph({
-Title = title,
-Desc = "Calculating...",
-Image = "clock",
-ImageSize = 30,
-})
+cfg.Title = title
+cfg.Desc = "Calculating..."
+cfg.Image = "clock"
+cfg.ImageSize = 28
+
+local typeName, p = paraModule:New(cfg)
 
 local running = true
 task.spawn(function()
@@ -11694,7 +11693,6 @@ end)
 return "Countdown", p
 end,
 }
-
 return{
 Elements={
 Paragraph=a.load'D',
