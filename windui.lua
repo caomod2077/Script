@@ -5760,7 +5760,18 @@ Justify=ag.Justify or"Between",
 UIPadding=ag.Window.ElementConfig.UIPadding,
 UICorner=ag.Window.ElementConfig.UICorner,
 Size=ag.Size or"Default",
-Tags=ag.Tags or{},
+Tags=(function()
+local t = {}
+if ag.Tags and typeof(ag.Tags) == "table" then
+for _, tag in ipairs(ag.Tags) do table.insert(t, tag) end
+end
+if ag.Tag and typeof(ag.Tag) == "string" then
+table.insert(t, { Title = ag.Tag, Color = ag.TagColor or Color3.fromRGB(0, 145, 255) })
+elseif ag.Tag and typeof(ag.Tag) == "table" then
+table.insert(t, ag.Tag)
+end
+return t
+end)(),
 UIElements={},
 
 Index=ag.Index,
@@ -10558,7 +10569,11 @@ local ak={}
 function ak.New(al,am)
 am = am or {}
 
-if am.Tab and am.Tab.LeftColumn and am.Tab.RightColumn then
+local isCardSplit = am.Side or am.Column or am.Card == true
+local useTwoColumns = (am.Tab and am.Tab.Window and (am.Tab.Window.TwoColumns or am.Tab.Window.Columns == 2)) or (am.Tab and am.Tab.TwoColumns) or isCardSplit
+
+if useTwoColumns and am.Tab and am.Tab.LeftColumn and am.Tab.RightColumn then
+if am.Tab.ColumnsHolder then am.Tab.ColumnsHolder.Visible = true end
 local side = am.Side or am.Column
 if side == "Right" or side == 2 or side == "right" or side == "RightColumn" then
 am.Parent = am.Tab.RightColumn
@@ -10574,9 +10589,11 @@ else
 am.Parent = am.Tab.LeftColumn
 end
 end
-if am.Tab.HideEmpty then
-am.Tab:HideEmpty()
+else
+am.Parent = am.Parent or (am.Tab and am.Tab.UIElements and am.Tab.UIElements.ContainerFrame)
 end
+if am.Tab and am.Tab.HideEmpty then
+am.Tab:HideEmpty()
 end
 
 local an={
@@ -11539,6 +11556,145 @@ end
 
 return al end function a._()
 
+local holdButtonModule = {
+New = function(self, cfg)
+local btnTitle = cfg.Title or "Hold Button"
+local btnDesc = cfg.Desc or nil
+local holdDuration = tonumber(cfg.HoldTime) or 1.5
+local callback = cfg.Callback or function() end
+local btnIcon = cfg.Icon or "hand"
+
+local btn = cfg.Tab and cfg.Tab.Button and cfg.Tab:Button({
+Title = btnTitle,
+Desc = btnDesc or ("Hold for " .. tostring(holdDuration) .. "s"),
+Icon = btnIcon,
+Tag = cfg.Tag or "HOLD",
+TagColor = cfg.TagColor or Color3.fromRGB(249, 115, 22),
+Callback = function() end,
+})
+
+if btn and btn.ElementFrame then
+local ef = btn.ElementFrame
+local fillBar = Instance.new("Frame")
+fillBar.Size = UDim2.new(0, 0, 1, 0)
+fillBar.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
+fillBar.BackgroundTransparency = 0.75
+fillBar.BorderSizePixel = 0
+fillBar.ZIndex = 2
+fillBar.Parent = ef
+local fillCorner = Instance.new("UICorner")
+fillCorner.CornerRadius = UDim.new(0, 10)
+fillCorner.Parent = fillBar
+
+local holding = false
+local holdConn
+local ts = game:GetService("TweenService")
+local fillTween
+
+ef.InputBegan:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+holding = true
+fillBar.Size = UDim2.new(0, 0, 1, 0)
+fillBar.BackgroundTransparency = 0.65
+fillTween = ts:Create(fillBar, TweenInfo.new(holdDuration, Enum.EasingStyle.Linear), {
+Size = UDim2.new(1, 0, 1, 0)
+})
+fillTween:Play()
+task.spawn(function()
+task.wait(holdDuration)
+if holding then
+pcall(callback)
+fillBar.BackgroundTransparency = 0.3
+ts:Create(fillBar, TweenInfo.new(0.3, Enum.EasingStyle.Quad), { BackgroundTransparency = 1 }):Play()
+task.wait(0.35)
+fillBar.Size = UDim2.new(0, 0, 1, 0)
+end
+end)
+end
+end)
+
+local function cancelHold()
+if holding then
+holding = false
+if fillTween then fillTween:Cancel() end
+ts:Create(fillBar, TweenInfo.new(0.18, Enum.EasingStyle.Quad), { Size = UDim2.new(0, 0, 1, 0) }):Play()
+end
+end
+
+ef.InputEnded:Connect(cancelHold)
+ef.MouseLeave:Connect(cancelHold)
+end
+return "HoldButton", btn
+end,
+}
+
+local changelogModule = {
+New = function(self, cfg)
+local title = cfg.Title or (cfg.Version and ("v" .. tostring(cfg.Version) .. " Changelog") or "Changelog")
+local items = cfg.Items or cfg.Changes or {}
+local descLines = {}
+for _, item in ipairs(items) do
+local str = tostring(item)
+if str:sub(1, 1) == "+" then
+table.insert(descLines, '<font color="#22C55E"><b>+</b></font> ' .. str:sub(2):match("^%s*(.-)%s*$"))
+elseif str:sub(1, 1) == "-" then
+table.insert(descLines, '<font color="#EF4444"><b>-</b></font> ' .. str:sub(2):match("^%s*(.-)%s*$"))
+elseif str:sub(1, 1) == "*" or str:sub(1, 1) == "~" then
+table.insert(descLines, '<font color="#3B82F6"><b>*</b></font> ' .. str:sub(2):match("^%s*(.-)%s*$"))
+else
+table.insert(descLines, '<font color="#A1A1AA">•</font> ' .. str)
+end
+end
+
+local p = cfg.Tab and cfg.Tab.Paragraph and cfg.Tab:Paragraph({
+Title = title,
+Desc = table.concat(descLines, "\n"),
+Image = cfg.Icon or "newspaper",
+ImageSize = 30,
+})
+return "Changelog", p
+end,
+}
+
+local countdownModule = {
+New = function(self, cfg)
+local targetTime = cfg.TargetTime or (os.time() + (cfg.Seconds or 3600))
+local title = cfg.Title or "Event Countdown"
+local onEnd = cfg.OnEnd or cfg.Callback
+
+local p = cfg.Tab and cfg.Tab.Paragraph and cfg.Tab:Paragraph({
+Title = title,
+Desc = "Calculating...",
+Image = "clock",
+ImageSize = 30,
+})
+
+local running = true
+task.spawn(function()
+while running do
+local remaining = math.max(0, targetTime - os.time())
+local days = math.floor(remaining / 86400)
+local hours = math.floor((remaining % 86400) / 3600)
+local mins = math.floor((remaining % 3600) / 60)
+local secs = remaining % 60
+local text = string.format("%02dd : %02dh : %02dm : %02ds", days, hours, mins, secs)
+if remaining <= 0 then
+if p and p.SetDesc then p:SetDesc('<font color="#22C55E"><b>EVENT READY</b></font>') end
+if onEnd then pcall(onEnd) end
+break
+else
+if p and p.SetDesc then
+p:SetDesc('<font color="#0091FF"><b>' .. text .. '</b></font>')
+end
+end
+task.wait(1)
+end
+end)
+
+return "Countdown", p
+end,
+}
+
 return{
 Elements={
 Paragraph=a.load'D',
@@ -11561,6 +11717,9 @@ Group=a.load'W',
 HStack=a.load'X',
 VStack=a.load'Y',
 Viewport=a.load'Z',
+HoldButton=holdButtonModule,
+Changelog=changelogModule,
+Countdown=countdownModule,
 
 },
 Load=function(aa,af,ai,ak,al,am,an,ao,ap)
@@ -11773,6 +11932,26 @@ ar.TabPaddingY=2+(Window.UIPadding/4)
 ar.TitlePaddingY=2+(Window.UIPadding/4)
 end
 
+local localUserId = (af.LocalPlayer and af.LocalPlayer.UserId) or 0
+if ap.LockedTo then
+local list = type(ap.LockedTo) == "table" and ap.LockedTo or { ap.LockedTo }
+if not table.find(list, localUserId) then
+ar.Locked = true
+end
+end
+if ap.HiddenTo then
+local list = type(ap.HiddenTo) == "table" and ap.HiddenTo or { ap.HiddenTo }
+if table.find(list, localUserId) then
+ap.Hidden = true
+end
+end
+if ap.Whitelist then
+local list = type(ap.Whitelist) == "table" and ap.Whitelist or { ap.Whitelist }
+if not table.find(list, localUserId) then
+ap.Hidden = true
+end
+end
+
 ao.TabCount=ao.TabCount+1
 
 local as=ao.TabCount
@@ -11783,6 +11962,7 @@ BackgroundTransparency=1,
 Size=UDim2.new(1,-7,0,0),
 AutomaticSize="Y",
 Parent=ap.Parent,
+Visible=not ap.Hidden,
 ThemeTag={
 ImageColor3="TabBackground",
 },
@@ -11968,6 +12148,8 @@ HorizontalAlignment="Center",
 }),
 })
 
+local isTwoCol = (Window and (Window.TwoColumns or Window.Columns == 2)) or (ap and ap.TwoColumns)
+
 local colHolder=al("Frame",{
 Size=UDim2.new(1,0,0,0),
 AutomaticSize="Y",
@@ -11975,6 +12157,7 @@ BackgroundTransparency=1,
 Parent=ar.UIElements.ContainerFrame,
 Name="ColumnsHolder",
 LayoutOrder=1,
+Visible=isTwoCol == true,
 },{
 al("UIListLayout",{
 FillDirection="Horizontal",
@@ -13429,6 +13612,11 @@ ax.Y.Scale,
 math.clamp(ax.Y.Offset, aw.MinSize.Y, aw.MaxSize.Y)
 )
 
+aw.TwoColumns = (av.TwoColumns == true) or (av.Columns == 2) or false
+aw.Columns = aw.TwoColumns and 2 or (av.Columns or 1)
+aw.BackgroundBlur = av.BackgroundBlur == true
+aw.Glow = av.Glow or av.GlowColor
+
 aw.UICorner=aw.Radius
 aw.SideBarWidth=isMobileDevice and 160 or 175
 
@@ -13626,13 +13814,14 @@ PaddingBottom=UDim.new(0,aw.UIPadding/2),
 }),
 })
 
+local glowColor = (aw.Glow and typeof(aw.Glow) == "Color3" and aw.Glow) or (aw.GlowColor and typeof(aw.GlowColor) == "Color3" and aw.GlowColor) or nil
 local b=ao("ImageLabel",{
 Image="rbxassetid://8992230677",
-ThemeTag={
+ThemeTag=glowColor and nil or {
 ImageColor3="WindowShadow",
-
 },
-ImageTransparency=1,
+ImageColor3=glowColor or nil,
+ImageTransparency=glowColor and 0.45 or 1,
 Size=UDim2.new(1,100,1,100),
 Position=UDim2.new(0,-50,0,-50),
 ScaleType="Slice",
@@ -14842,6 +15031,18 @@ an.SafeCallback(aw.OnOpenCallback)
 end)
 end
 
+if aw.BackgroundBlur then
+task.spawn(function()
+pcall(function()
+local l = game:GetService("Lighting")
+local b = l:FindFirstChild("WindUI_BackgroundBlur") or Instance.new("BlurEffect")
+b.Name = "WindUI_BackgroundBlur"
+b.Size = 16
+b.Parent = l
+end)
+end)
+end
+
 task.wait(0.06)
 aw.Closed=false
 
@@ -14945,6 +15146,15 @@ local F={}
 if aw.OnCloseCallback then
 task.spawn(function()
 an.SafeCallback(aw.OnCloseCallback)
+end)
+end
+
+if aw.BackgroundBlur then
+task.spawn(function()
+pcall(function()
+local b = game:GetService("Lighting"):FindFirstChild("WindUI_BackgroundBlur")
+if b then b:Destroy() end
+end)
 end)
 end
 
@@ -15950,6 +16160,30 @@ if aa.TooltipGui then
 aa.TooltipGui.Parent=az
 end
 end
+
+function aa.SetDisplayOrder(self, order)
+order = tonumber(order) or -99999
+if aa.ScreenGui then aa.ScreenGui.DisplayOrder = order end
+if aa.NotificationGui then aa.NotificationGui.DisplayOrder = order + 10 end
+if aa.DropdownGui then aa.DropdownGui.DisplayOrder = order + 20 end
+if aa.TooltipGui then aa.TooltipGui.DisplayOrder = order + 30 end
+return order
+end
+aa.SetZIndex = aa.SetDisplayOrder
+aa.SetLayer = aa.SetDisplayOrder
+
+function aa.SetNotificationUpper(self, isUpper)
+if aa.NotificationGui and aa.NotificationGui:FindFirstChildWhichIsA("Frame", true) then
+local holder = aa.NotificationGui:FindFirstChildWhichIsA("Frame", true)
+if isUpper ~= false then
+holder.Position = UDim2.new(1, -20, 0, 20)
+holder.AnchorPoint = Vector2.new(1, 0)
+else
+holder.Position = UDim2.new(1, -20, 1, -20)
+holder.AnchorPoint = Vector2.new(1, 1)
+end
+end
+end
 math.clamp(aa.TransparencyValue,0,1)
 
 local ay=aa.NotificationModule.Init(aa.NotificationGui)
@@ -16196,6 +16430,10 @@ task.wait()
 until b
 end
 
+
+if aA.DisplayOrder then
+aa:SetDisplayOrder(aA.DisplayOrder)
+end
 local h=aB(aA)
 
 aa.Transparent=aA.Transparent
