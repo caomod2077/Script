@@ -10617,28 +10617,42 @@ local ak={}
 function ak.New(al,am)
 am = am or {}
 
+local tab = am.Tab
+local win = am.Window or (tab and tab.Window)
 local isCardSplit = am.Side or am.Column or am.Card == true
-local useTwoColumns = (am.Tab and am.Tab.Window and (am.Tab.Window.TwoColumns or am.Tab.Window.Columns == 2)) or (am.Tab and am.Tab.TwoColumns) or isCardSplit
 
-if useTwoColumns and am.Tab and am.Tab.LeftColumn and am.Tab.RightColumn then
-if am.Tab.ColumnsHolder then am.Tab.ColumnsHolder.Visible = true end
+local useTwoColumns
+if am.FullWidth == true or am.Span == "Full" then
+useTwoColumns = false
+elseif am.Side or am.Column then
+useTwoColumns = true
+elseif tab and tab.TwoColumns ~= nil then
+useTwoColumns = (tab.TwoColumns == true)
+elseif win and (win.TwoColumns or win.Columns == 2) then
+useTwoColumns = true
+else
+useTwoColumns = false
+end
+
+if useTwoColumns and tab and tab.LeftColumn and tab.RightColumn then
+if tab.ColumnsHolder then tab.ColumnsHolder.Visible = true end
 local side = am.Side or am.Column
 if side == "Right" or side == 2 or side == "right" or side == "RightColumn" then
-am.Parent = am.Tab.RightColumn
+am.Parent = tab.RightColumn
 elseif side == "Left" or side == 1 or side == "left" or side == "LeftColumn" then
-am.Parent = am.Tab.LeftColumn
+am.Parent = tab.LeftColumn
 elseif am.FullWidth == true or am.Span == "Full" then
-am.Parent = am.Tab.UIElements.ContainerFrame
+am.Parent = tab.UIElements.ContainerFrame
 else
-am.Tab.__secCount = (am.Tab.__secCount or 0) + 1
-if am.Tab.__secCount % 2 == 0 then
-am.Parent = am.Tab.RightColumn
+tab.__secCount = (tab.__secCount or 0) + 1
+if tab.__secCount % 2 == 0 then
+am.Parent = tab.RightColumn
 else
-am.Parent = am.Tab.LeftColumn
+am.Parent = tab.LeftColumn
 end
 end
 else
-am.Parent = am.Parent or (am.Tab and am.Tab.UIElements and am.Tab.UIElements.ContainerFrame)
+am.Parent = am.Parent or (tab and tab.UIElements and tab.UIElements.ContainerFrame)
 end
 if am.Tab and am.Tab.HideEmpty then
 am.Tab:HideEmpty()
@@ -11952,6 +11966,8 @@ Border=ap.Border,
 Selected=false,
 Index=nil,
 Parent=ap.Parent,
+Window=Window,
+TwoColumns=(ap.TwoColumns ~= nil and ap.TwoColumns) or (Window and (Window.TwoColumns or Window.Columns == 2)) or false,
 UIElements={},
 Elements={},
 ContainerFrame=nil,
@@ -12194,7 +12210,7 @@ HorizontalAlignment="Center",
 }),
 })
 
-local isTwoCol = (Window and (Window.TwoColumns or Window.Columns == 2)) or (ap and ap.TwoColumns)
+local isTwoCol = ar.TwoColumns
 
 local colHolder=al("Frame",{
 Size=UDim2.new(1,0,0,0),
