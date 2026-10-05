@@ -8306,6 +8306,44 @@ local ae=aa.New
 local af={}
 
 function af.New(ag,ah)
+local divText = (type(ah) == "table" and (ah.Title or ah.Text)) or (type(ah) == "string" and ah) or nil
+
+if divText and divText ~= "" then
+local labelDiv = ae("Frame", {
+Size = UDim2.new(1, -10, 0, 24),
+BackgroundTransparency = 1,
+Parent = ah.Parent,
+Name = "LabeledDivider",
+}, {
+ae("UIListLayout", {
+FillDirection = "Horizontal",
+VerticalAlignment = "Center",
+HorizontalAlignment = "Center",
+Padding = UDim.new(0, 10),
+}),
+ae("Frame", {
+Size = UDim2.new(0.5, -45, 0, 1),
+BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+BackgroundTransparency = 0.88,
+BorderSizePixel = 0,
+}),
+ae("TextLabel", {
+Text = divText,
+FontFace = Font.new(aa.Font, Enum.FontWeight.SemiBold),
+TextSize = 12,
+TextColor3 = Color3.fromRGB(160, 150, 145),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+}),
+ae("Frame", {
+Size = UDim2.new(0.5, -45, 0, 1),
+BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+BackgroundTransparency = 0.88,
+BorderSizePixel = 0,
+}),
+})
+return "Divider", { __type = "Divider", ElementFrame = labelDiv }
+else
 local ai=ae("Frame",{
 Size=ah.ParentType~="Group"and UDim2.new(1,0,0,1)or UDim2.new(0,1,1,0),
 Position=UDim2.new(0.5,0,0.5,0),
@@ -8322,8 +8360,8 @@ BackgroundTransparency=1,
 },{
 ai
 })
-
-return"Divider",{__type="Divider",ElementFrame=aj}
+return "Divider", { __type = "Divider", ElementFrame = aj }
+end
 end
 
 return af end function a.N()
@@ -11716,6 +11754,557 @@ return "Changelog", p
 end,
 }
 
+local function FormatNumberWithCommas(val)
+local str = tostring(math.max(tonumber(val) or 0, 0))
+while true do
+local res, cnt = str:gsub("^(%-?%d+)(%d%d%d)", "%1,%2")
+str = res
+if cnt == 0 then return str end
+end
+end
+
+local discordCardModule = {
+New = function(self, cfg)
+local aa = a.load'd'
+local af = aa.New
+local ai = aa.Tween
+
+local rawInvite = tostring(cfg.Invite or cfg.Code or cfg[1] or "mSrMzVuc3h")
+local inviteCode = rawInvite:gsub("^https?://discord%.gg/", ""):gsub("^discord%.gg/", ""):gsub("^https?://discord%.com/invite/", "")
+local fallbackTitle = cfg.Title or "Discord Community"
+local fallbackDesc = cfg.Desc or "Join our official community server!"
+local onJoin = cfg.OnJoin or cfg.Callback
+
+local targetParent = cfg.Parent or (cfg.Tab and cfg.Tab.LeftColumn) or (cfg.Tab and cfg.Tab.UIElements and cfg.Tab.UIElements.ContainerFrame)
+if cfg.Tab and cfg.Tab.TwoColumns and cfg.Side == "Right" and cfg.Tab.RightColumn then
+targetParent = cfg.Tab.RightColumn
+end
+
+local guildIconImg = cfg.Icon or "rbxassetid://133610205520685"
+
+local cardFrame = aa.NewRoundFrame(10, "Squircle", {
+Size = UDim2.new(1, 0, 0, 0),
+AutomaticSize = "Y",
+BackgroundTransparency = 1,
+Parent = targetParent,
+ImageColor3 = Color3.fromRGB(255, 255, 255),
+ImageTransparency = 0.93,
+Name = "DiscordWidgetCard",
+}, {
+aa.NewRoundFrame(9, "SquircleOutline", {
+Size = UDim2.new(1, 0, 1, 0),
+AutomaticSize = "Y",
+ImageColor3 = Color3.fromRGB(88, 101, 242),
+ImageTransparency = 0.72,
+Name = "Outline",
+ClipsDescendants = true,
+}, {
+af("UIListLayout", {
+FillDirection = "Vertical",
+SortOrder = "LayoutOrder",
+Padding = UDim.new(0, 0),
+}),
+-- Discord Blurple Header Banner
+af("Frame", {
+Size = UDim2.new(1, 0, 0, 52),
+BackgroundColor3 = Color3.fromRGB(88, 101, 242),
+BackgroundTransparency = 0.2,
+BorderSizePixel = 0,
+LayoutOrder = 1,
+Name = "Banner",
+}, {
+af("UIGradient", {
+Color = ColorSequence.new{
+ColorSequenceKeypoint.new(0, Color3.fromRGB(88, 101, 242)),
+ColorSequenceKeypoint.new(0.55, Color3.fromRGB(114, 137, 218)),
+ColorSequenceKeypoint.new(1, Color3.fromRGB(88, 101, 242)),
+},
+Rotation = 45,
+}),
+af("ImageLabel", {
+Size = UDim2.new(0, 26, 0, 26),
+Position = UDim2.new(1, -12, 0.5, 0),
+AnchorPoint = Vector2.new(1, 0.5),
+BackgroundTransparency = 1,
+Image = aa.Icon"messages-square"[1],
+ImageRectSize = aa.Icon"messages-square"[2].ImageRectSize,
+ImageRectOffset = aa.Icon"messages-square"[2].ImageRectPosition,
+ImageColor3 = Color3.new(1, 1, 1),
+ImageTransparency = 0.35,
+}),
+}),
+-- Card Body
+af("Frame", {
+Size = UDim2.new(1, 0, 0, 0),
+AutomaticSize = "Y",
+BackgroundTransparency = 1,
+LayoutOrder = 2,
+Name = "Body",
+}, {
+af("UIPadding", {
+PaddingTop = UDim.new(0, 10),
+PaddingBottom = UDim.new(0, 12),
+PaddingLeft = UDim.new(0, 12),
+PaddingRight = UDim.new(0, 12),
+}),
+af("UIListLayout", {
+FillDirection = "Vertical",
+Padding = UDim.new(0, 10),
+SortOrder = "LayoutOrder",
+}),
+-- Server Info Row
+af("Frame", {
+Size = UDim2.new(1, 0, 0, 48),
+BackgroundTransparency = 1,
+LayoutOrder = 1,
+Name = "HeaderRow",
+}, {
+af("UIListLayout", {
+FillDirection = "Horizontal",
+VerticalAlignment = "Center",
+Padding = UDim.new(0, 10),
+SortOrder = "LayoutOrder",
+}),
+af("Frame", {
+Size = UDim2.new(0, 46, 0, 46),
+BackgroundColor3 = Color3.fromRGB(30, 26, 25),
+BorderSizePixel = 0,
+LayoutOrder = 1,
+Name = "IconHolder",
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 12) }),
+af("ImageLabel", {
+Size = UDim2.new(1, 0, 1, 0),
+BackgroundTransparency = 1,
+Image = guildIconImg,
+ScaleType = "Crop",
+Name = "IconImg",
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 12) }),
+}),
+}),
+af("Frame", {
+Size = UDim2.new(1, -58, 1, 0),
+BackgroundTransparency = 1,
+LayoutOrder = 2,
+}, {
+af("UIListLayout", {
+FillDirection = "Vertical",
+VerticalAlignment = "Center",
+Padding = UDim.new(0, 3),
+SortOrder = "LayoutOrder",
+}),
+af("Frame", {
+Size = UDim2.new(1, 0, 0, 20),
+BackgroundTransparency = 1,
+LayoutOrder = 1,
+}, {
+af("UIListLayout", {
+FillDirection = "Horizontal",
+VerticalAlignment = "Center",
+Padding = UDim.new(0, 6),
+}),
+af("TextLabel", {
+Text = fallbackTitle,
+TextSize = 15,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Bold),
+TextColor3 = Color3.new(1, 1, 1),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+TextTruncate = "AtEnd",
+Name = "GuildName",
+}),
+af("Frame", {
+Size = UDim2.new(0, 0, 0, 18),
+AutomaticSize = "X",
+BackgroundColor3 = Color3.fromRGB(88, 101, 242),
+BackgroundTransparency = 0.8,
+BorderSizePixel = 0,
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 4) }),
+af("UIPadding", { PaddingLeft = UDim.new(0, 5), PaddingRight = UDim.new(0, 5) }),
+af("TextLabel", {
+Text = "COMMUNITY",
+TextSize = 9,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Bold),
+TextColor3 = Color3.fromRGB(114, 137, 218),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+}),
+}),
+}),
+af("TextLabel", {
+Text = "discord.gg/" .. inviteCode,
+TextSize = 12,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
+TextColor3 = Color3.fromRGB(148, 163, 184),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+LayoutOrder = 2,
+Name = "VanityText",
+}),
+}),
+}),
+-- Presence Bar
+af("Frame", {
+Size = UDim2.new(1, 0, 0, 24),
+BackgroundColor3 = Color3.fromRGB(20, 16, 15),
+BackgroundTransparency = 0.5,
+BorderSizePixel = 0,
+LayoutOrder = 2,
+Name = "PresenceBar",
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 6) }),
+af("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) }),
+af("UIListLayout", {
+FillDirection = "Horizontal",
+VerticalAlignment = "Center",
+Padding = UDim.new(0, 14),
+SortOrder = "LayoutOrder",
+}),
+af("Frame", {
+Size = UDim2.new(0, 0, 1, 0),
+AutomaticSize = "X",
+BackgroundTransparency = 1,
+LayoutOrder = 1,
+}, {
+af("UIListLayout", { FillDirection = "Horizontal", VerticalAlignment = "Center", Padding = UDim.new(0, 6) }),
+af("Frame", {
+Size = UDim2.new(0, 8, 0, 8),
+BackgroundColor3 = Color3.fromRGB(34, 197, 94),
+BorderSizePixel = 0,
+}, { af("UICorner", { CornerRadius = UDim.new(1, 0) }) }),
+af("TextLabel", {
+Text = '<font color="#22C55E"><b>--</b></font> Online',
+TextSize = 12,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
+TextColor3 = Color3.fromRGB(220, 220, 220),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+Name = "OnlineLabel",
+}),
+}),
+af("Frame", {
+Size = UDim2.new(0, 0, 1, 0),
+AutomaticSize = "X",
+BackgroundTransparency = 1,
+LayoutOrder = 2,
+}, {
+af("UIListLayout", { FillDirection = "Horizontal", VerticalAlignment = "Center", Padding = UDim.new(0, 6) }),
+af("Frame", {
+Size = UDim2.new(0, 8, 0, 8),
+BackgroundColor3 = Color3.fromRGB(148, 163, 184),
+BorderSizePixel = 0,
+}, { af("UICorner", { CornerRadius = UDim.new(1, 0) }) }),
+af("TextLabel", {
+Text = '<font color="#94A3B8"><b>--</b></font> Members',
+TextSize = 12,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
+TextColor3 = Color3.fromRGB(220, 220, 220),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+Name = "MemberLabel",
+}),
+}),
+}),
+-- Description
+af("TextLabel", {
+Text = fallbackDesc,
+TextSize = 13,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Regular),
+TextColor3 = Color3.fromRGB(210, 205, 200),
+BackgroundTransparency = 1,
+AutomaticSize = "Y",
+Size = UDim2.new(1, 0, 0, 0),
+TextWrapped = true,
+TextXAlignment = "Left",
+LayoutOrder = 3,
+Name = "DescText",
+}),
+-- Action Buttons Row
+af("Frame", {
+Size = UDim2.new(1, 0, 0, 32),
+BackgroundTransparency = 1,
+LayoutOrder = 4,
+Name = "ActionButtons",
+}, {
+af("UIListLayout", {
+FillDirection = "Horizontal",
+Padding = UDim.new(0, 8),
+VerticalAlignment = "Center",
+SortOrder = "LayoutOrder",
+}),
+af("TextButton", {
+Size = UDim2.new(0, 130, 0, 32),
+BackgroundColor3 = Color3.fromRGB(88, 101, 242),
+BorderSizePixel = 0,
+Text = "Join Server",
+TextColor3 = Color3.new(1, 1, 1),
+TextSize = 13,
+FontFace = Font.new(aa.Font, Enum.FontWeight.SemiBold),
+LayoutOrder = 1,
+Name = "JoinButton",
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 6) }),
+}),
+af("TextButton", {
+Size = UDim2.new(0, 110, 0, 32),
+BackgroundColor3 = Color3.fromRGB(36, 30, 28),
+BorderSizePixel = 0,
+Text = "Refresh Stats",
+TextColor3 = Color3.fromRGB(230, 225, 220),
+TextSize = 13,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
+LayoutOrder = 2,
+Name = "RefreshButton",
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 6) }),
+af("UIStroke", { Color = Color3.fromRGB(60, 52, 48), Thickness = 1 }),
+}),
+}),
+}),
+}),
+})
+
+local guildLabel = cardFrame.Outline.Body.HeaderRow.Frame.Frame.GuildName
+local vanityLabel = cardFrame.Outline.Body.HeaderRow.Frame.VanityText
+local onlineLabel = cardFrame.Outline.Body.PresenceBar.Frame.OnlineLabel
+local memberLabel = cardFrame.Outline.Body.PresenceBar:GetChildren()[3].MemberLabel
+local descLabel = cardFrame.Outline.Body.DescText
+local iconImageObj = cardFrame.Outline.Body.HeaderRow.IconHolder.IconImg
+local joinBtn = cardFrame.Outline.Body.ActionButtons.JoinButton
+local refreshBtn = cardFrame.Outline.Body.ActionButtons.RefreshButton
+
+local function fetchDiscordData(silent)
+local req = http_request or request or (syn and syn.request) or (fluxus and fluxus.request)
+if not req then return end
+task.spawn(function()
+local ok, res = pcall(function()
+return game:GetService("HttpService"):JSONDecode(req({
+Url = "https://discord.com/api/v10/invites/" .. inviteCode .. "?with_counts=true&with_expiration=true",
+Method = "GET",
+Headers = { ["User-Agent"] = "RobloxBot/1.0", ["Accept"] = "application/json" },
+}).Body)
+end)
+if ok and res and res.guild then
+local g = res.guild
+if g.name then guildLabel.Text = g.name end
+if res.approximate_presence_count then
+onlineLabel.Text = '<font color="#22C55E"><b>' .. FormatNumberWithCommas(res.approximate_presence_count) .. '</b></font> Online'
+end
+if res.approximate_member_count then
+memberLabel.Text = '<font color="#94A3B8"><b>' .. FormatNumberWithCommas(res.approximate_member_count) .. '</b></font> Members'
+end
+if g.icon then
+local iconUrl = "https://cdn.discordapp.com/icons/" .. tostring(g.id) .. "/" .. tostring(g.icon) .. ".png?size=256"
+iconImageObj.Image = iconUrl
+end
+if g.description and g.description ~= "" then
+descLabel.Text = g.description
+end
+end
+end)
+end
+
+joinBtn.MouseButton1Click:Connect(function()
+pcall(function()
+if setclipboard then
+setclipboard("https://discord.gg/" .. inviteCode)
+elseif toclipboard then
+toclipboard("https://discord.gg/" .. inviteCode)
+end
+end)
+joinBtn.Text = "Copied Link!"
+joinBtn.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
+if cfg.Window and cfg.Window.PlaySound then
+cfg.Window:PlaySound("tab")
+end
+if onJoin then pcall(onJoin) end
+task.delay(1.8, function()
+if joinBtn and joinBtn.Parent then
+joinBtn.Text = "Join Server"
+joinBtn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+end
+end)
+end)
+
+refreshBtn.MouseButton1Click:Connect(function()
+fetchDiscordData(false)
+refreshBtn.Text = "Refreshing..."
+task.delay(1, function()
+if refreshBtn and refreshBtn.Parent then
+refreshBtn.Text = "Refresh Stats"
+end
+end)
+end)
+
+if cfg.AutoFetch ~= false then
+fetchDiscordData(true)
+end
+
+local handle = {
+SetTitle = function(s, t) guildLabel.Text = tostring(t) end,
+SetDesc = function(s, d) descLabel.Text = tostring(d) end,
+Refresh = function(s) fetchDiscordData(false) end,
+Destroy = function(s) cardFrame:Destroy() end,
+ElementFrame = cardFrame,
+__type = "DiscordCard",
+}
+
+return "DiscordCard", handle
+end,
+}
+
+local embedModule = {
+New = function(self, cfg)
+local aa = a.load'd'
+local af = aa.New
+
+local stripeColor = cfg.Color or Color3.fromRGB(88, 101, 242)
+local title = cfg.Title or "Embed"
+local desc = cfg.Desc or ""
+local fields = cfg.Fields or {}
+local footer = cfg.Footer or ""
+local parent = cfg.Parent or (cfg.Tab and cfg.Tab.LeftColumn) or (cfg.Tab and cfg.Tab.UIElements and cfg.Tab.UIElements.ContainerFrame)
+
+local embedFrame = af("Frame", {
+Size = UDim2.new(1, 0, 0, 0),
+AutomaticSize = "Y",
+BackgroundColor3 = Color3.fromRGB(22, 18, 17),
+BackgroundTransparency = 0.5,
+BorderSizePixel = 0,
+Parent = parent,
+Name = "DiscordEmbed",
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 8) }),
+-- Accent left stripe
+af("Frame", {
+Size = UDim2.new(0, 4, 1, 0),
+BackgroundColor3 = stripeColor,
+BorderSizePixel = 0,
+Name = "Stripe",
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 4) }),
+}),
+af("Frame", {
+Size = UDim2.new(1, -12, 0, 0),
+Position = UDim2.new(0, 10, 0, 0),
+AutomaticSize = "Y",
+BackgroundTransparency = 1,
+Name = "Content",
+}, {
+af("UIPadding", {
+PaddingTop = UDim.new(0, 10),
+PaddingBottom = UDim.new(0, 10),
+PaddingLeft = UDim.new(0, 6),
+PaddingRight = UDim.new(0, 8),
+}),
+af("UIListLayout", {
+FillDirection = "Vertical",
+Padding = UDim.new(0, 6),
+SortOrder = "LayoutOrder",
+}),
+af("TextLabel", {
+Text = title,
+TextSize = 15,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Bold),
+TextColor3 = Color3.new(1, 1, 1),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+LayoutOrder = 1,
+Name = "Title",
+}),
+desc ~= "" and af("TextLabel", {
+Text = desc,
+TextSize = 13,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Regular),
+TextColor3 = Color3.fromRGB(210, 205, 200),
+BackgroundTransparency = 1,
+AutomaticSize = "Y",
+Size = UDim2.new(1, 0, 0, 0),
+TextWrapped = true,
+TextXAlignment = "Left",
+LayoutOrder = 2,
+Name = "Desc",
+}) or nil,
+}),
+})
+
+local contentHolder = embedFrame.Content
+
+if #fields > 0 then
+local fieldsHolder = af("Frame", {
+Size = UDim2.new(1, 0, 0, 0),
+AutomaticSize = "Y",
+BackgroundTransparency = 1,
+LayoutOrder = 3,
+Name = "Fields",
+}, {
+af("UIListLayout", {
+FillDirection = "Vertical",
+Padding = UDim.new(0, 6),
+SortOrder = "LayoutOrder",
+}),
+})
+for fIdx, field in ipairs(fields) do
+local fieldRow = af("Frame", {
+Size = UDim2.new(1, 0, 0, 0),
+AutomaticSize = "Y",
+BackgroundTransparency = 1,
+LayoutOrder = fIdx,
+}, {
+af("UIListLayout", {
+FillDirection = "Vertical",
+Padding = UDim.new(0, 2),
+}),
+af("TextLabel", {
+Text = tostring(field.Name or field.Title or "Field"),
+TextSize = 13,
+FontFace = Font.new(aa.Font, Enum.FontWeight.SemiBold),
+TextColor3 = Color3.fromRGB(240, 235, 230),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+}),
+af("TextLabel", {
+Text = tostring(field.Value or field.Desc or ""),
+TextSize = 12,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Regular),
+TextColor3 = Color3.fromRGB(180, 175, 170),
+BackgroundTransparency = 1,
+AutomaticSize = "Y",
+Size = UDim2.new(1, 0, 0, 0),
+TextWrapped = true,
+TextXAlignment = "Left",
+}),
+})
+fieldRow.Parent = fieldsHolder
+end
+fieldsHolder.Parent = contentHolder
+end
+
+if footer ~= "" then
+af("TextLabel", {
+Text = footer,
+TextSize = 11,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
+TextColor3 = Color3.fromRGB(130, 125, 120),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+LayoutOrder = 4,
+Parent = contentHolder,
+Name = "Footer",
+})
+end
+
+local handle = {
+ElementFrame = embedFrame,
+__type = "Embed",
+Destroy = function(s) embedFrame:Destroy() end,
+}
+return "Embed", handle
+end,
+}
+
 local countdownModule = {
 New = function(self, cfg)
 local paraModule = a.load'D'
@@ -11780,6 +12369,8 @@ Viewport=a.load'Z',
 HoldButton=holdButtonModule,
 Changelog=changelogModule,
 Countdown=countdownModule,
+DiscordCard=discordCardModule,
+Embed=embedModule,
 
 },
 Load=function(aa,af,ai,ak,al,am,an,ao,ap)
@@ -12651,6 +13242,28 @@ LayoutOrder = 2,
 }),
 })
 return bannerFrame
+end
+
+function ar.DiscordCard(self, dConfig)
+dConfig = dConfig or {}
+dConfig.Tab = self
+dConfig.Parent = self.LeftColumn or (self.UIElements and self.UIElements.ContainerFrame)
+local mod = a._().Elements.DiscordCard
+local typeName, card = mod:New(dConfig)
+table.insert(self.Elements, card)
+if self.HideEmpty then self:HideEmpty() end
+return card
+end
+
+function ar.Embed(self, eConfig)
+eConfig = eConfig or {}
+eConfig.Tab = self
+eConfig.Parent = self.LeftColumn or (self.UIElements and self.UIElements.ContainerFrame)
+local mod = a._().Elements.Embed
+local typeName, emb = mod:New(eConfig)
+table.insert(self.Elements, emb)
+if self.HideEmpty then self:HideEmpty() end
+return emb
 end
 
 function ar.AddSearch(self, placeholder)
