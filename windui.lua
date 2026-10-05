@@ -11782,6 +11782,101 @@ end
 
 local guildIconImg = cfg.Icon or "rbxassetid://133610205520685"
 
+local guildLabel = af("TextLabel", {
+Text = fallbackTitle,
+TextSize = 15,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Bold),
+TextColor3 = Color3.new(1, 1, 1),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+TextTruncate = "AtEnd",
+Name = "GuildName",
+})
+
+local vanityLabel = af("TextLabel", {
+Text = "discord.gg/" .. inviteCode,
+TextSize = 12,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
+TextColor3 = Color3.fromRGB(148, 163, 184),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+LayoutOrder = 2,
+Name = "VanityText",
+})
+
+local onlineLabel = af("TextLabel", {
+Text = '<font color="#22C55E"><b>--</b></font> Online',
+TextSize = 12,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
+TextColor3 = Color3.fromRGB(220, 220, 220),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+Name = "OnlineLabel",
+})
+
+local memberLabel = af("TextLabel", {
+Text = '<font color="#94A3B8"><b>--</b></font> Members',
+TextSize = 12,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
+TextColor3 = Color3.fromRGB(220, 220, 220),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+Name = "MemberLabel",
+})
+
+local descLabel = af("TextLabel", {
+Text = fallbackDesc,
+TextSize = 13,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Regular),
+TextColor3 = Color3.fromRGB(210, 205, 200),
+BackgroundTransparency = 1,
+AutomaticSize = "Y",
+Size = UDim2.new(1, 0, 0, 0),
+TextWrapped = true,
+TextXAlignment = "Left",
+LayoutOrder = 3,
+Name = "DescText",
+})
+
+local iconImageObj = af("ImageLabel", {
+Size = UDim2.new(1, 0, 1, 0),
+BackgroundTransparency = 1,
+Image = guildIconImg,
+ScaleType = "Crop",
+Name = "IconImg",
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 12) }),
+})
+
+local joinBtn = af("TextButton", {
+Size = UDim2.new(0, 130, 0, 32),
+BackgroundColor3 = Color3.fromRGB(88, 101, 242),
+BorderSizePixel = 0,
+Text = "Join Server",
+TextColor3 = Color3.new(1, 1, 1),
+TextSize = 13,
+FontFace = Font.new(aa.Font, Enum.FontWeight.SemiBold),
+LayoutOrder = 1,
+Name = "JoinButton",
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 6) }),
+})
+
+local refreshBtn = af("TextButton", {
+Size = UDim2.new(0, 110, 0, 32),
+BackgroundColor3 = Color3.fromRGB(36, 30, 28),
+BorderSizePixel = 0,
+Text = "Refresh Stats",
+TextColor3 = Color3.fromRGB(230, 225, 220),
+TextSize = 13,
+FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
+LayoutOrder = 2,
+Name = "RefreshButton",
+}, {
+af("UICorner", { CornerRadius = UDim.new(0, 6) }),
+af("UIStroke", { Color = Color3.fromRGB(60, 52, 48), Thickness = 1 }),
+})
+
 local cardFrame = aa.NewRoundFrame(10, "Squircle", {
 Size = UDim2.new(1, 0, 0, 0),
 AutomaticSize = "Y",
@@ -11873,15 +11968,7 @@ LayoutOrder = 1,
 Name = "IconHolder",
 }, {
 af("UICorner", { CornerRadius = UDim.new(0, 12) }),
-af("ImageLabel", {
-Size = UDim2.new(1, 0, 1, 0),
-BackgroundTransparency = 1,
-Image = guildIconImg,
-ScaleType = "Crop",
-Name = "IconImg",
-}, {
-af("UICorner", { CornerRadius = UDim.new(0, 12) }),
-}),
+iconImageObj,
 }),
 af("Frame", {
 Size = UDim2.new(1, -58, 1, 0),
@@ -11904,16 +11991,7 @@ FillDirection = "Horizontal",
 VerticalAlignment = "Center",
 Padding = UDim.new(0, 6),
 }),
-af("TextLabel", {
-Text = fallbackTitle,
-TextSize = 15,
-FontFace = Font.new(aa.Font, Enum.FontWeight.Bold),
-TextColor3 = Color3.new(1, 1, 1),
-BackgroundTransparency = 1,
-AutomaticSize = "XY",
-TextTruncate = "AtEnd",
-Name = "GuildName",
-}),
+guildLabel,
 af("Frame", {
 Size = UDim2.new(0, 0, 0, 18),
 AutomaticSize = "X",
@@ -11933,16 +12011,7 @@ AutomaticSize = "XY",
 }),
 }),
 }),
-af("TextLabel", {
-Text = "discord.gg/" .. inviteCode,
-TextSize = 12,
-FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
-TextColor3 = Color3.fromRGB(148, 163, 184),
-BackgroundTransparency = 1,
-AutomaticSize = "XY",
-LayoutOrder = 2,
-Name = "VanityText",
-}),
+vanityLabel,
 }),
 }),
 -- Presence Bar
@@ -11974,15 +12043,7 @@ Size = UDim2.new(0, 8, 0, 8),
 BackgroundColor3 = Color3.fromRGB(34, 197, 94),
 BorderSizePixel = 0,
 }, { af("UICorner", { CornerRadius = UDim.new(1, 0) }) }),
-af("TextLabel", {
-Text = '<font color="#22C55E"><b>--</b></font> Online',
-TextSize = 12,
-FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
-TextColor3 = Color3.fromRGB(220, 220, 220),
-BackgroundTransparency = 1,
-AutomaticSize = "XY",
-Name = "OnlineLabel",
-}),
+onlineLabel,
 }),
 af("Frame", {
 Size = UDim2.new(0, 0, 1, 0),
@@ -11996,31 +12057,10 @@ Size = UDim2.new(0, 8, 0, 8),
 BackgroundColor3 = Color3.fromRGB(148, 163, 184),
 BorderSizePixel = 0,
 }, { af("UICorner", { CornerRadius = UDim.new(1, 0) }) }),
-af("TextLabel", {
-Text = '<font color="#94A3B8"><b>--</b></font> Members',
-TextSize = 12,
-FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
-TextColor3 = Color3.fromRGB(220, 220, 220),
-BackgroundTransparency = 1,
-AutomaticSize = "XY",
-Name = "MemberLabel",
+memberLabel,
 }),
 }),
-}),
--- Description
-af("TextLabel", {
-Text = fallbackDesc,
-TextSize = 13,
-FontFace = Font.new(aa.Font, Enum.FontWeight.Regular),
-TextColor3 = Color3.fromRGB(210, 205, 200),
-BackgroundTransparency = 1,
-AutomaticSize = "Y",
-Size = UDim2.new(1, 0, 0, 0),
-TextWrapped = true,
-TextXAlignment = "Left",
-LayoutOrder = 3,
-Name = "DescText",
-}),
+descLabel,
 -- Action Buttons Row
 af("Frame", {
 Size = UDim2.new(1, 0, 0, 32),
@@ -12034,46 +12074,12 @@ Padding = UDim.new(0, 8),
 VerticalAlignment = "Center",
 SortOrder = "LayoutOrder",
 }),
-af("TextButton", {
-Size = UDim2.new(0, 130, 0, 32),
-BackgroundColor3 = Color3.fromRGB(88, 101, 242),
-BorderSizePixel = 0,
-Text = "Join Server",
-TextColor3 = Color3.new(1, 1, 1),
-TextSize = 13,
-FontFace = Font.new(aa.Font, Enum.FontWeight.SemiBold),
-LayoutOrder = 1,
-Name = "JoinButton",
-}, {
-af("UICorner", { CornerRadius = UDim.new(0, 6) }),
-}),
-af("TextButton", {
-Size = UDim2.new(0, 110, 0, 32),
-BackgroundColor3 = Color3.fromRGB(36, 30, 28),
-BorderSizePixel = 0,
-Text = "Refresh Stats",
-TextColor3 = Color3.fromRGB(230, 225, 220),
-TextSize = 13,
-FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
-LayoutOrder = 2,
-Name = "RefreshButton",
-}, {
-af("UICorner", { CornerRadius = UDim.new(0, 6) }),
-af("UIStroke", { Color = Color3.fromRGB(60, 52, 48), Thickness = 1 }),
-}),
+joinBtn,
+refreshBtn,
 }),
 }),
 }),
 })
-
-local guildLabel = cardFrame.Outline.Body.HeaderRow.Frame.Frame.GuildName
-local vanityLabel = cardFrame.Outline.Body.HeaderRow.Frame.VanityText
-local onlineLabel = cardFrame.Outline.Body.PresenceBar.Frame.OnlineLabel
-local memberLabel = cardFrame.Outline.Body.PresenceBar:GetChildren()[3].MemberLabel
-local descLabel = cardFrame.Outline.Body.DescText
-local iconImageObj = cardFrame.Outline.Body.HeaderRow.IconHolder.IconImg
-local joinBtn = cardFrame.Outline.Body.ActionButtons.JoinButton
-local refreshBtn = cardFrame.Outline.Body.ActionButtons.RefreshButton
 
 local function fetchDiscordData(silent)
 local req = http_request or request or (syn and syn.request) or (fluxus and fluxus.request)
@@ -12154,7 +12160,6 @@ __type = "DiscordCard",
 return "DiscordCard", handle
 end,
 }
-
 local embedModule = {
 New = function(self, cfg)
 local aa = a.load'd'
