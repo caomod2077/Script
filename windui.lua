@@ -12376,7 +12376,11 @@ Embed=embedModule,
 Load=function(aa,af,ai,ak,al,am,an,ao,ap)
 for aq,ar in next,ai do
 aa[aq]=function(as,at)
-at=at or{}
+if type(at) == "string" then
+at = { Title = at, Text = at }
+else
+at = at or {}
+end
 at.Tab=ap or aa
 at.ParentType=aa.__type
 at.ParentTable=aa
@@ -16374,7 +16378,43 @@ end
 end
 end
 
-function aw.Divider(H)
+function aw.Divider(H, titleText)
+local tText = (type(H) == "string" and H) or (type(titleText) == "string" and titleText) or nil
+if tText and tText ~= "" then
+local L = ao("Frame", {
+Parent = aw.UIElements.SideBar.Frame,
+Size = UDim2.new(1, -7, 0, 20),
+BackgroundTransparency = 1,
+}, {
+ao("UIListLayout", {
+FillDirection = "Horizontal",
+VerticalAlignment = "Center",
+HorizontalAlignment = "Center",
+Padding = UDim.new(0, 6),
+}),
+ao("Frame", {
+Size = UDim2.new(0.5, -35, 0, 1),
+BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+BackgroundTransparency = 0.88,
+BorderSizePixel = 0,
+}),
+ao("TextLabel", {
+Text = tText,
+FontFace = Font.new(an.Font, Enum.FontWeight.SemiBold),
+TextSize = 10,
+TextColor3 = Color3.fromRGB(150, 140, 135),
+BackgroundTransparency = 1,
+AutomaticSize = "XY",
+}),
+ao("Frame", {
+Size = UDim2.new(0.5, -35, 0, 1),
+BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+BackgroundTransparency = 0.88,
+BorderSizePixel = 0,
+}),
+})
+return L
+else
 local J=ao("Frame",{
 Size=UDim2.new(1,0,0,1),
 Position=UDim2.new(0.5,0,0,0),
@@ -16394,6 +16434,7 @@ J,
 })
 
 return L
+end
 end
 
 local H=a.load'o'
