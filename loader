@@ -46,7 +46,7 @@ local placeScripts = {
     -- Murder Mystery 2
     [142823291] = function()
         task.spawn(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/xv3gasx/Murder-Mystery-2/refs/heads/main/Release.lua"))()
+            print("[FOXNAME] the script currently being rebuilt")
         end)
     end,
 
